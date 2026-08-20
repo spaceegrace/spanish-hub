@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spanish 1 Endless Drill</title>
+<style>
+  :root{
+    --bg:#1a1025;
+    --panel:#241833;
+    --panel2:#2c1f40;
+    --border:#40305a;
+    --text:#f5ecf8;
+    --muted:#b49bc7;
+    --accent:#ff6b6b;
+    --accent2:#ffc857;
+    --warn:#ffb454;
+    --danger:#ff6b81;
+    --good:#4fd6a8;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:radial-gradient(1200px 800px at 20% -10%, #351e4d 0%, var(--bg) 55%) fixed;
+    color:var(--text);
+    font-family:"Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:28px 16px 60px;
+  }
+  .wrap{ width:100%; max-width:820px; }
+  header{ text-align:center; margin-bottom:18px; }
+  header h1{
+    margin:0 0 4px;
+    font-size:1.7rem;
+    letter-spacing:0.2px;
+    background:linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  header p{ margin:0; color:var(--muted); font-size:0.92rem; }
+
+  .statsbar{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    justify-content:center;
+    margin:18px 0 16px;
+  }
+  .stat{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:8px 14px;
+    min-width:88px;
+    text-align:center;
+  }
+  .stat .num{ font-size:1.15rem; font-weight:700; color:var(--accent); }
+  .stat .lbl{ font-size:0.68rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; margin-top:2px;}
+
+  details.filters{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:10px 16px;
+    margin-bottom:18px;
+  }
+  details.filters summary{
+    cursor:pointer;
+    color:var(--muted);
+    font-size:0.85rem;
+    outline:none;
+  }
+  .filter-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(150px,1fr));
+    gap:8px 16px;
+    margin-top:12px;
+  }
+  .filter-grid label{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:0.88rem;
+    color:var(--text);
+    cursor:pointer;
+  }
+  .filter-grid input{ accent-color: var(--accent); width:16px; height:16px; }
+
+  .card{
+    background:linear-gradient(180deg, var(--panel2), var(--panel));
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:26px 24px 22px;
+    box-shadow:0 12px 30px -14px rgba(0,0,0,0.6);
+  }
+  .card-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:14px;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .badge{
+    display:inline-block;
+    background:rgba(255,107,107,0.15);
+    color:var(--accent);
+    border:1px solid rgba(255,107,107,0.35);
+    padding:3px 10px;
+    border-radius:999px;
+    font-size:0.72rem;
+    font-weight:600;
+    letter-spacing:0.03em;
+  }
+  .timer{
+    font-variant-numeric:tabular-nums;
+    color:var(--muted);
+    font-size:0.85rem;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:999px;
+    padding:3px 10px;
+  }
+  .timer.running{ color:var(--accent2); }
+
+  .problem{
+    font-size:1.32rem;
+    line-height:1.65;
+    padding:14px 4px 6px;
+    min-height:70px;
+  }
+  .problem .es{ color:var(--accent2); font-weight:700; }
+  .problem small{ display:block; margin-top:6px; font-size:0.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; }
+
+  .hint-area{ margin-top:10px; }
+  .hint-box{
+    background:rgba(255,180,84,0.08);
+    border:1px solid rgba(255,180,84,0.3);
+    border-radius:10px;
+    padding:10px 14px;
+    margin-bottom:8px;
+    font-size:0.92rem;
+    color:#ffd9a0;
+    animation:fadeIn 0.25s ease;
+  }
+  .hint-box .hnum{ font-weight:700; margin-right:6px; color:var(--warn); }
+  .answer-box{
+    background:rgba(79,214,168,0.09);
+    border:1px solid rgba(79,214,168,0.35);
+    border-radius:10px;
+    padding:12px 14px;
+    margin-top:8px;
+    font-size:1.05rem;
+    color:#bdf3dd;
+    animation:fadeIn 0.25s ease;
+  }
+  .answer-box .albl{ font-weight:700; color:var(--good); margin-right:6px; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(-3px);} to{opacity:1; transform:translateY(0);} }
+
+  .controls{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:20px;
+  }
+  button{
+    font-family:inherit;
+    font-size:0.9rem;
+    font-weight:600;
+    padding:10px 16px;
+    border-radius:10px;
+    border:1px solid var(--border);
+    background:var(--panel);
+    color:var(--text);
+    cursor:pointer;
+    transition:transform 0.08s ease, background 0.15s ease, border-color 0.15s ease;
+  }
+  button:hover{ transform:translateY(-1px); border-color:var(--accent); }
+  button:active{ transform:translateY(0); }
+  button:disabled{ opacity:0.4; cursor:not-allowed; transform:none; }
+  button.primary{ background:var(--accent); border-color:var(--accent); color:#1a1025; }
+  button.primary:hover{ background:#ff8a8a; }
+  button.ghost{ background:transparent; }
+  .assess{ display:flex; gap:10px; margin-top:14px; }
+  button.right{ background:rgba(79,214,168,0.15); border-color:var(--good); color:var(--good); }
+  button.right:hover{ background:rgba(79,214,168,0.28); }
+  button.wrong{ background:rgba(255,107,129,0.15); border-color:var(--danger); color:var(--danger); }
+  button.wrong:hover{ background:rgba(255,107,129,0.28); }
+
+  footer{ margin-top:22px; text-align:center; color:var(--muted); font-size:0.78rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Spanish 1 Endless Drill</h1>
+    <p>An unlimited stream of beginner Spanish problems, with progressive hints. Built for speed practice, flashcard-style.</p>
+  </header>
+
+  <div class="statsbar">
+    <div class="stat"><div class="num" id="statSeen">0</div><div class="lbl">Seen</div></div>
+    <div class="stat"><div class="num" id="statCorrect">0</div><div class="lbl">Correct</div></div>
+    <div class="stat"><div class="num" id="statStreak">0</div><div class="lbl">Streak</div></div>
+    <div class="stat"><div class="num" id="statBest">0</div><div class="lbl">Best streak</div></div>
+    <div class="stat"><div class="num" id="statAvg">–</div><div class="lbl">Avg time</div></div>
+  </div>
+
+  <details class="filters" open>
+    <summary>Topics included (uncheck any you want to skip)</summary>
+    <div class="filter-grid" id="filterGrid"></div>
+  </details>
+
+  <div class="card">
+    <div class="card-top">
+      <span class="badge" id="catBadge">Loading…</span>
+      <span class="timer" id="timerDisplay">0:00</span>
+    </div>
+    <div class="problem" id="problemText">Getting your first problem ready…</div>
+
+    <div class="hint-area" id="hintArea"></div>
+
+    <div class="controls">
+      <button class="primary" id="hintBtn">Show Hint (1/3)</button>
+      <button id="answerBtn">Show Answer</button>
+      <button class="ghost" id="skipBtn">Skip / New Problem</button>
+    </div>
+
+    <div class="assess" id="assessArea" style="display:none;">
+      <button class="right" id="rightBtn">✓ I got it right</button>
+      <button class="wrong" id="wrongBtn">✗ I missed it</button>
+    </div>
+  </div>
+
+  <footer>Stats reset when you reload the page — it's all in-memory, just for this session's practice run.</footer>
+</div>
+
+<script>
+/* ============================ helpers ============================ */
+function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function randChoice(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function sampleWithout(arr, exclude, n) {
+  const pool = arr.filter(x => x !== exclude);
+  const out = [];
+  while (out.length < n && pool.length) {
+    const idx = Math.floor(Math.random() * pool.length);
+    out.push(pool.splice(idx, 1)[0]);
+  }
+  return out;
+}
+
+/* ============================ VOCAB DATA ============================ */
+/* [spanish, english, gender] gender only set where relevant (nouns) */
+const colors = [
+  ["rojo","red"], ["azul","blue"], ["verde","green"], ["amarillo","yellow"],
+  ["negro","black"], ["blanco","white"], ["morado","purple"], ["naranja","orange"],
+  ["rosado","pink"], ["gris","gray"], ["marrón","brown"]
+];
+const animals = [
+  ["perro","dog"], ["gato","cat"], ["pájaro","bird"], ["pez","fish"],
+  ["caballo","horse"], ["vaca","cow"], ["oveja","sheep"], ["ratón","mouse"],
+  ["león","lion"], ["oso","bear"], ["conejo","rabbit"], ["elefante","elephant"]
+];
+const food = [
+  ["manzana","apple"], ["pan","bread"], ["queso","cheese"], ["pollo","chicken"],
+  ["arroz","rice"], ["huevo","egg"], ["sopa","soup"], ["fruta","fruit"],
+  ["verdura","vegetable"], ["café","coffee"], ["leche","milk"], ["agua","water"],
+  ["carne","meat"], ["pastel","cake"]
+];
+const family = [
+  ["madre","mother"], ["padre","father"], ["hermano","brother"], ["hermana","sister"],
+  ["abuelo","grandfather"], ["abuela","grandmother"], ["hijo","son"], ["hija","daughter"],
+  ["tío","uncle"], ["tía","aunt"], ["primo","cousin (m)"], ["prima","cousin (f)"]
+];
+const houseWords = [
+  ["casa","house"], ["mesa","table"], ["silla","chair"], ["libro","book"],
+  ["puerta","door"], ["ventana","window"], ["cama","bed"], ["cocina","kitchen"],
+  ["baño","bathroom"], ["coche","car"]
+];
+const clothing = [
+  ["camisa","shirt"], ["pantalones","pants"], ["zapatos","shoes"],
+  ["sombrero","hat"], ["vestido","dress"], ["chaqueta","jacket"]
+];
+const phrases = [
+  ["hola","hello"], ["adiós","goodbye"], ["por favor","please"], ["gracias","thank you"],
+  ["de nada","you're welcome"], ["buenos días","good morning"], ["buenas noches","good night"],
+  ["¿cómo estás?","how are you?"], ["lo siento","I'm sorry"], ["mucho gusto","nice to meet you"],
+  ["¿cómo te llamas?","what is your name?"], ["me llamo...","my name is..."], ["hasta luego","see you later"]
+];
+const days = [
+  ["lunes","Monday"], ["martes","Tuesday"], ["miércoles","Wednesday"], ["jueves","Thursday"],
+  ["viernes","Friday"], ["sábado","Saturday"], ["domingo","Sunday"]
+];
+const months = [
+  ["enero","January"], ["febrero","February"], ["marzo","March"], ["abril","April"],
+  ["mayo","May"], ["junio","June"], ["julio","July"], ["agosto","August"],
+  ["septiembre","September"], ["octubre","October"], ["noviembre","November"], ["diciembre","December"]
+];
+
+/* nouns tagged with article, for the el/la drill */
+const genderedNouns = [
+  ["casa","house","la"], ["libro","book","el"], ["mesa","table","la"], ["perro","dog","el"],
+  ["gato","cat","el"], ["puerta","door","la"], ["coche","car","el"], ["ventana","window","la"],
+  ["agua","water","el"], ["mano","hand","la"], ["día","day","el"], ["problema","problem","el"],
+  ["ciudad","city","la"], ["playa","beach","la"], ["mapa","map","el"], ["clase","class","la"],
+  ["hombre","man","el"], ["mujer","woman","la"], ["papel","paper","el"], ["nación","nation","la"]
+];
+
+/* verbs */
+const pronouns = [
+  ["yo","I"], ["tú","you (informal)"], ["él/ella","he/she"], ["nosotros","we"], ["ellos/ellas","they"]
+];
+const irregular = {
+  ser:    { en:"to be (identity/traits)",  forms:["soy","eres","es","somos","son"] },
+  estar:  { en:"to be (location/state)",    forms:["estoy","estás","está","estamos","están"] },
+  tener:  { en:"to have",                   forms:["tengo","tienes","tiene","tenemos","tienen"] },
+  ir:     { en:"to go",                     forms:["voy","vas","va","vamos","van"] },
+  hacer:  { en:"to do/make",                forms:["hago","haces","hace","hacemos","hacen"] },
+  querer: { en:"to want",                   forms:["quiero","quieres","quiere","queremos","quieren"] }
+};
+const regularVerbs = [
+  { inf:"hablar", en:"to speak", endings:["o","as","a","amos","an"] },
+  { inf:"comer",  en:"to eat",   endings:["o","es","e","emos","en"] },
+  { inf:"vivir",  en:"to live",  endings:["o","es","e","imos","en"] },
+  { inf:"estudiar", en:"to study", endings:["o","as","a","amos","an"] },
+  { inf:"leer",   en:"to read",  endings:["o","es","e","emos","en"] },
+  { inf:"escribir", en:"to write", endings:["o","es","e","imos","en"] }
+];
+
+/* ============================ VOCABULARY GENERATORS ============================ */
+function genVocabDrill(bank, categoryLabel) {
+  const [word, meaning] = randChoice(bank);
+  const toSpanish = Math.random() < 0.5;
+  const prompt = toSpanish ? meaning : word;
+  const answer = toSpanish ? word : meaning;
+  const otherWords = sampleWithout(bank.map(b => b[0]), word, 3);
+  return {
+    category: `Vocabulary &middot; ${categoryLabel}`,
+    prompt: toSpanish
+      ? `Translate to Spanish:<br><span class="es">"${prompt}"</span>`
+      : `Translate to English:<br><span class="es">"${prompt}"</span>`,
+    hints: toSpanish
+      ? [
+          `This word is in the "${categoryLabel}" group you're studying — picture it before guessing.`,
+          `It starts with the letter "${word[0]}" and has ${word.length} letters.`,
+          `A couple of near neighbors in this set: ${otherWords.slice(0,2).join(", ")} — but not those. It's "${word}".`
+        ]
+      : [
+          `This is a ${categoryLabel.toLowerCase()} word — think about what it looks/sounds like in English.`,
+          `It starts with "${meaning[0]}".`,
+          `Full word: it means "${meaning}".`
+        ],
+    answer: `${answer}`
+  };
+}
+
+function genPhrase() {
+  const [es, en] = randChoice(phrases);
+  const toSpanish = Math.random() < 0.5;
+  return {
+    category: "Common Phrases",
+    prompt: toSpanish
+      ? `How do you say this in Spanish?<br><span class="es">"${en}"</span>`
+      : `What does this phrase mean?<br><span class="es">"${es}"</span>`,
+    hints: toSpanish
+      ? [
+          "This is a everyday greeting/courtesy phrase — think of what you'd say meeting someone or leaving.",
+          `It starts with "${es[0]}" and has ${es.split(" ").length} word(s).`,
+          `The full phrase is "${es}".`
+        ]
+      : [
+          "This is a common social phrase used in everyday conversation.",
+          `It's typically used when ${en.includes("?") ? "asking something" : "greeting, thanking, or apologizing"}.`,
+          `It means "${en}".`
+        ],
+    answer: toSpanish ? es : en
+  };
+}
+
+function genNumber() {
+  const n = randInt(0, 100);
+  const spanishNums = {
+    0:"cero",1:"uno",2:"dos",3:"tres",4:"cuatro",5:"cinco",6:"seis",7:"siete",8:"ocho",9:"nueve",10:"diez",
+    11:"once",12:"doce",13:"trece",14:"catorce",15:"quince",16:"dieciséis",17:"diecisiete",18:"dieciocho",19:"diecinueve",20:"veinte",
+    30:"treinta",40:"cuarenta",50:"cincuenta",60:"sesenta",70:"setenta",80:"ochenta",90:"noventa",100:"cien"
+  };
+  const tensWords = {20:"veinti",30:"treinta y ",40:"cuarenta y ",50:"cincuenta y ",60:"sesenta y ",70:"setenta y ",80:"ochenta y ",90:"noventa y "};
+  const ones = ["","uno","dos","tres","cuatro","cinco","seis","siete","ocho","nueve"];
+
+  let word;
+  if (spanishNums[n]) {
+    word = spanishNums[n];
+  } else if (n < 30) {
+    word = "veinti" + ones[n - 20];
+  } else {
+    const tens = Math.floor(n / 10) * 10;
+    word = tensWords[tens] + ones[n % 10];
+  }
+
+  const toSpanish = Math.random() < 0.5;
+  return {
+    category: "Numbers",
+    prompt: toSpanish
+      ? `Write this number in Spanish:<br><span class="es">${n}</span>`
+      : `What number is this?<br><span class="es">"${word}"</span>`,
+    hints: toSpanish
+      ? [
+          n < 16 ? "Numbers 0–15 in Spanish each have their own unique word — no pattern shortcut here, just recall it."
+                  : n < 30 ? "Numbers 16–29 are usually written as ONE word starting with 'dieci-' (16–19) or 'veinti-' (21–29)."
+                  : "Numbers 31+ follow the pattern: [tens word] + 'y' + [ones word], e.g. 45 = cuarenta y cinco.",
+          `It starts with "${word[0]}".`,
+          `The full word is "${word}".`
+        ]
+      : [
+          "Break the word into its number parts if it's a compound (tens + 'y' + ones).",
+          `It's ${n < 20 ? "a number under 20" : n < 100 ? "a two-digit number" : "one hundred"}.`,
+          `It equals ${n}.`
+        ],
+    answer: toSpanish ? word : `${n}`
+  };
+}
+
+function genCalendar() {
+  const useDays = Math.random() < 0.5;
+  const bank = useDays ? days : months;
+  const label = useDays ? "day of the week" : "month";
+  const [es, en] = randChoice(bank);
+  const toSpanish = Math.random() < 0.5;
+  return {
+    category: useDays ? "Days of the Week" : "Months",
+    prompt: toSpanish
+      ? `Translate this ${label} to Spanish:<br><span class="es">"${en}"</span>`
+      : `Translate this ${label} to English:<br><span class="es">"${es}"</span>`,
+    hints: toSpanish
+      ? [
+          useDays ? "Remember, the Spanish week starts with lunes (Monday), not Sunday." : "Spanish month names are close cousins of the English ones, but spelled differently.",
+          `It starts with "${es[0]}".`,
+          `The answer is "${es}". Note: days and months are NOT capitalized in Spanish.`
+        ]
+      : [
+          "Spanish days and months are lowercase, unlike in English.",
+          `It starts with "${en[0]}".`,
+          `The answer is "${en}".`
+        ],
+    answer: toSpanish ? es : en
+  };
+}
+
+/* ============================ GRAMMAR: EL / LA ============================ */
+function genArticle() {
+  const [word, meaning, article] = randChoice(genderedNouns);
+  const isException = ["agua","mano","día","problema","mapa"].includes(word);
+  return {
+    category: "Grammar &middot; el / la",
+    prompt: `What is the correct definite article for:<br><span class="es">"${word}"</span> <small>(${meaning})</small>`,
+    hints: [
+      "General rule: nouns ending in -o are usually masculine (el); nouns ending in -a are usually feminine (la).",
+      isException
+        ? `"${word}" is one of the common exceptions to that -o/-a rule — don't just go by the ending here.`
+        : `"${word}" ends in "${word.slice(-1)}", which follows the general rule.`,
+      `The correct article is "${article}".`
+    ],
+    answer: `${article} ${word}`
+  };
+}
+
+/* ============================ GRAMMAR: VERB CONJUGATION ============================ */
+function genIrregularVerb() {
+  const keys = Object.keys(irregular);
+  const verb = randChoice(keys);
+  const data = irregular[verb];
+  const pIdx = randInt(0, 4);
+  const [pronoun, pronounEn] = pronouns[pIdx];
+  const answer = data.forms[pIdx];
+  return {
+    category: `Verbs &middot; ${verb} (irregular)`,
+    prompt: `Conjugate <span class="es">"${verb}"</span> <small>(${data.en})</small> for:<br><span class="es">"${pronoun}" (${pronounEn})</span>`,
+    hints: [
+      `"${verb}" is an irregular verb — its forms don't follow the normal -ar/-er/-ir pattern, so this one just has to be memorized.`,
+      `The full present-tense set is: ${pronouns.map((p,i)=>`${p[0]} → ${data.forms[i]}`).join(", ")}.`,
+      `For "${pronoun}", the correct form is "${answer}".`
+    ],
+    answer
+  };
+}
+
+function genRegularVerb() {
+  const verb = randChoice(regularVerbs);
+  const stem = verb.inf.slice(0, -2);
+  const familyLetter = verb.inf.slice(-2, -1);
+  const pIdx = randInt(0, 4);
+  const [pronoun, pronounEn] = pronouns[pIdx];
+  const answer = stem + verb.endings[pIdx];
+  return {
+    category: `Verbs &middot; ${verb.inf} (regular -${familyLetter}r)`,
+    prompt: `Conjugate <span class="es">"${verb.inf}"</span> <small>(${verb.en})</small> for:<br><span class="es">"${pronoun}" (${pronounEn})</span>`,
+    hints: [
+      `"${verb.inf}" is a regular -${familyLetter}r verb — drop the "-${familyLetter}r" ending and add the ending that matches the subject.`,
+      `The stem is "${stem}-". For "${pronoun}", the ending you need is "-${verb.endings[pIdx]}".`,
+      `Putting it together: "${stem}" + "${verb.endings[pIdx]}" = "${answer}".`
+    ],
+    answer
+  };
+}
+
+/* ============================ topics / registry ============================ */
+const TOPICS = {
+  colors:   { label: "Vocabulary: Colors",       gens: [() => genVocabDrill(colors, "Colors")] },
+  animals:  { label: "Vocabulary: Animals",      gens: [() => genVocabDrill(animals, "Animals")] },
+  food:     { label: "Vocabulary: Food & Drink", gens: [() => genVocabDrill(food, "Food & Drink")] },
+  family:   { label: "Vocabulary: Family",       gens: [() => genVocabDrill(family, "Family")] },
+  house:    { label: "Vocabulary: Home",         gens: [() => genVocabDrill(houseWords, "Around the House")] },
+  clothing: { label: "Vocabulary: Clothing",     gens: [() => genVocabDrill(clothing, "Clothing")] },
+  phrases:  { label: "Common Phrases",           gens: [genPhrase] },
+  numbers:  { label: "Numbers (0–100)",          gens: [genNumber] },
+  calendar: { label: "Days & Months",            gens: [genCalendar] },
+  articles: { label: "Grammar: el / la",         gens: [genArticle] },
+  verbs:    { label: "Verb Conjugation",         gens: [genIrregularVerb, genRegularVerb] }
+};
+
+/* ============================ app state ============================ */
+let current = null;
+let hintsShown = 0;
+let answerShown = false;
+let timerStart = null;
+let timerInterval = null;
+let stats = { seen: 0, correct: 0, streak: 0, best: 0, totalTime: 0, timedCount: 0 };
+
+const filterGrid = document.getElementById('filterGrid');
+Object.entries(TOPICS).forEach(([key, t]) => {
+  const label = document.createElement('label');
+  label.innerHTML = `<input type="checkbox" checked data-topic="${key}"> ${t.label}`;
+  filterGrid.appendChild(label);
+});
+
+function activeGenerators() {
+  const checked = [...filterGrid.querySelectorAll('input[type=checkbox]:checked')].map(cb => cb.dataset.topic);
+  let pool = [];
+  checked.forEach(key => { pool = pool.concat(TOPICS[key].gens); });
+  if (pool.length === 0) {
+    Object.values(TOPICS).forEach(t => pool = pool.concat(t.gens));
+  }
+  return pool;
+}
+
+function fmtTime(sec) {
+  const m = Math.floor(sec / 60), s = Math.floor(sec % 60);
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+function updateStatsUI() {
+  document.getElementById('statSeen').textContent = stats.seen;
+  document.getElementById('statCorrect').textContent = stats.correct;
+  document.getElementById('statStreak').textContent = stats.streak;
+  document.getElementById('statBest').textContent = stats.best;
+  document.getElementById('statAvg').textContent = stats.timedCount ? fmtTime(stats.totalTime / stats.timedCount) : '–';
+}
+
+function startTimer() {
+  timerStart = Date.now();
+  const el = document.getElementById('timerDisplay');
+  el.classList.add('running');
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    el.textContent = fmtTime((Date.now() - timerStart) / 1000);
+  }, 250);
+}
+function stopTimer() {
+  clearInterval(timerInterval);
+  document.getElementById('timerDisplay').classList.remove('running');
+  return timerStart ? (Date.now() - timerStart) / 1000 : 0;
+}
+
+function newProblem() {
+  const pool = activeGenerators();
+  const gen = randChoice(pool);
+  current = gen();
+  hintsShown = 0;
+  answerShown = false;
+
+  document.getElementById('catBadge').textContent = current.category.replace(/&middot;/g, '·');
+  document.getElementById('problemText').innerHTML = current.prompt;
+  document.getElementById('hintArea').innerHTML = '';
+  document.getElementById('assessArea').style.display = 'none';
+
+  const hintBtn = document.getElementById('hintBtn');
+  hintBtn.disabled = false;
+  hintBtn.textContent = 'Show Hint (1/3)';
+  document.getElementById('answerBtn').disabled = false;
+  document.getElementById('answerBtn').textContent = 'Show Answer';
+
+  startTimer();
+}
+
+function showNextHint() {
+  if (!current || hintsShown >= current.hints.length) return;
+  const box = document.createElement('div');
+  box.className = 'hint-box';
+  box.innerHTML = `<span class="hnum">Hint ${hintsShown + 1}:</span>${current.hints[hintsShown]}`;
+  document.getElementById('hintArea').appendChild(box);
+  hintsShown++;
+  const hintBtn = document.getElementById('hintBtn');
+  if (hintsShown >= current.hints.length) {
+    hintBtn.disabled = true;
+    hintBtn.textContent = 'No more hints';
+  } else {
+    hintBtn.textContent = `Show Hint (${hintsShown + 1}/${current.hints.length})`;
+  }
+}
+
+function revealAnswer() {
+  if (!current || answerShown) return;
+  answerShown = true;
+  const box = document.createElement('div');
+  box.className = 'answer-box';
+  box.innerHTML = `<span class="albl">Answer:</span>${current.answer}`;
+  document.getElementById('hintArea').appendChild(box);
+  document.getElementById('answerBtn').disabled = true;
+  document.getElementById('answerBtn').textContent = 'Answer shown';
+  document.getElementById('assessArea').style.display = 'flex';
+  stopTimer();
+}
+
+function markResult(correct) {
+  const elapsed = timerStart ? (Date.now() - timerStart) / 1000 : 0;
+  stats.seen++;
+  stats.totalTime += elapsed;
+  stats.timedCount++;
+  if (correct) {
+    stats.correct++;
+    stats.streak++;
+    if (stats.streak > stats.best) stats.best = stats.streak;
+  } else {
+    stats.streak = 0;
+  }
+  updateStatsUI();
+  newProblem();
+}
+
+document.getElementById('hintBtn').addEventListener('click', showNextHint);
+document.getElementById('answerBtn').addEventListener('click', revealAnswer);
+document.getElementById('skipBtn').addEventListener('click', () => { stopTimer(); newProblem(); });
+document.getElementById('rightBtn').addEventListener('click', () => markResult(true));
+document.getElementById('wrongBtn').addEventListener('click', () => markResult(false));
+filterGrid.addEventListener('change', () => { /* filters apply to the next problem automatically */ });
+
+updateStatsUI();
+newProblem();
+</script>
+</body>
+</html>
