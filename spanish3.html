@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spanish 3 Endless Drill</title>
+<style>
+  :root{
+    --bg:#1a1025;
+    --panel:#241833;
+    --panel2:#2c1f40;
+    --border:#40305a;
+    --text:#f5ecf8;
+    --muted:#b49bc7;
+    --accent:#ff6b6b;
+    --accent2:#ffc857;
+    --warn:#ffb454;
+    --danger:#ff6b81;
+    --good:#4fd6a8;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:radial-gradient(1200px 800px at 20% -10%, #351e4d 0%, var(--bg) 55%) fixed;
+    color:var(--text);
+    font-family:"Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:28px 16px 60px;
+  }
+  .wrap{ width:100%; max-width:820px; }
+  header{ text-align:center; margin-bottom:18px; }
+  header h1{
+    margin:0 0 4px;
+    font-size:1.7rem;
+    letter-spacing:0.2px;
+    background:linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  header p{ margin:0; color:var(--muted); font-size:0.92rem; }
+
+  .statsbar{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    justify-content:center;
+    margin:18px 0 16px;
+  }
+  .stat{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:8px 14px;
+    min-width:88px;
+    text-align:center;
+  }
+  .stat .num{ font-size:1.15rem; font-weight:700; color:var(--accent); }
+  .stat .lbl{ font-size:0.68rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; margin-top:2px;}
+
+  details.filters{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:10px 16px;
+    margin-bottom:18px;
+  }
+  details.filters summary{
+    cursor:pointer;
+    color:var(--muted);
+    font-size:0.85rem;
+    outline:none;
+  }
+  .filter-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(150px,1fr));
+    gap:8px 16px;
+    margin-top:12px;
+  }
+  .filter-grid label{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:0.88rem;
+    color:var(--text);
+    cursor:pointer;
+  }
+  .filter-grid input{ accent-color: var(--accent); width:16px; height:16px; }
+
+  .card{
+    background:linear-gradient(180deg, var(--panel2), var(--panel));
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:26px 24px 22px;
+    box-shadow:0 12px 30px -14px rgba(0,0,0,0.6);
+  }
+  .card-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:14px;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .badge{
+    display:inline-block;
+    background:rgba(255,107,107,0.15);
+    color:var(--accent);
+    border:1px solid rgba(255,107,107,0.35);
+    padding:3px 10px;
+    border-radius:999px;
+    font-size:0.72rem;
+    font-weight:600;
+    letter-spacing:0.03em;
+  }
+  .timer{
+    font-variant-numeric:tabular-nums;
+    color:var(--muted);
+    font-size:0.85rem;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:999px;
+    padding:3px 10px;
+  }
+  .timer.running{ color:var(--accent2); }
+
+  .problem{
+    font-size:1.26rem;
+    line-height:1.65;
+    padding:14px 4px 6px;
+    min-height:70px;
+  }
+  .problem .es{ color:var(--accent2); font-weight:700; }
+  .problem small{ display:block; margin-top:6px; font-size:0.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; }
+
+  .hint-area{ margin-top:10px; }
+  .hint-box{
+    background:rgba(255,180,84,0.08);
+    border:1px solid rgba(255,180,84,0.3);
+    border-radius:10px;
+    padding:10px 14px;
+    margin-bottom:8px;
+    font-size:0.92rem;
+    color:#ffd9a0;
+    animation:fadeIn 0.25s ease;
+  }
+  .hint-box .hnum{ font-weight:700; margin-right:6px; color:var(--warn); }
+  .answer-box{
+    background:rgba(79,214,168,0.09);
+    border:1px solid rgba(79,214,168,0.35);
+    border-radius:10px;
+    padding:12px 14px;
+    margin-top:8px;
+    font-size:1.0rem;
+    color:#bdf3dd;
+    animation:fadeIn 0.25s ease;
+  }
+  .answer-box .albl{ font-weight:700; color:var(--good); margin-right:6px; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(-3px);} to{opacity:1; transform:translateY(0);} }
+
+  .controls{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:20px;
+  }
+  button{
+    font-family:inherit;
+    font-size:0.9rem;
+    font-weight:600;
+    padding:10px 16px;
+    border-radius:10px;
+    border:1px solid var(--border);
+    background:var(--panel);
+    color:var(--text);
+    cursor:pointer;
+    transition:transform 0.08s ease, background 0.15s ease, border-color 0.15s ease;
+  }
+  button:hover{ transform:translateY(-1px); border-color:var(--accent); }
+  button:active{ transform:translateY(0); }
+  button:disabled{ opacity:0.4; cursor:not-allowed; transform:none; }
+  button.primary{ background:var(--accent); border-color:var(--accent); color:#1a1025; }
+  button.primary:hover{ background:#ff8a8a; }
+  button.ghost{ background:transparent; }
+  .assess{ display:flex; gap:10px; margin-top:14px; }
+  button.right{ background:rgba(79,214,168,0.15); border-color:var(--good); color:var(--good); }
+  button.right:hover{ background:rgba(79,214,168,0.28); }
+  button.wrong{ background:rgba(255,107,129,0.15); border-color:var(--danger); color:var(--danger); }
+  button.wrong:hover{ background:rgba(255,107,129,0.28); }
+
+  footer{ margin-top:22px; text-align:center; color:var(--muted); font-size:0.78rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Spanish 3 Endless Drill</h1>
+    <p>An unlimited stream of advanced Spanish problems — future &amp; conditional tense, present subjunctive, present &amp; past perfect, formal (usted/ustedes) commands, double object pronouns, relative pronouns, si-clauses, and passive/impersonal se — with progressive hints. Built for speed practice, flashcard-style.</p>
+  </header>
+
+  <div class="statsbar">
+    <div class="stat"><div class="num" id="statSeen">0</div><div class="lbl">Seen</div></div>
+    <div class="stat"><div class="num" id="statCorrect">0</div><div class="lbl">Correct</div></div>
+    <div class="stat"><div class="num" id="statStreak">0</div><div class="lbl">Streak</div></div>
+    <div class="stat"><div class="num" id="statBest">0</div><div class="lbl">Best streak</div></div>
+    <div class="stat"><div class="num" id="statAvg">–</div><div class="lbl">Avg time</div></div>
+  </div>
+
+  <details class="filters" open>
+    <summary>Topics included (uncheck any you want to skip)</summary>
+    <div class="filter-grid" id="filterGrid"></div>
+  </details>
+
+  <div class="card">
+    <div class="card-top">
+      <span class="badge" id="catBadge">Loading…</span>
+      <span class="timer" id="timerDisplay">0:00</span>
+    </div>
+    <div class="problem" id="problemText">Getting your first problem ready…</div>
+
+    <div class="hint-area" id="hintArea"></div>
+
+    <div class="controls">
+      <button class="primary" id="hintBtn">Show Hint (1/3)</button>
+      <button id="answerBtn">Show Answer</button>
+      <button class="ghost" id="skipBtn">Skip / New Problem</button>
+    </div>
+
+    <div class="assess" id="assessArea" style="display:none;">
+      <button class="right" id="rightBtn">✓ I got it right</button>
+      <button class="wrong" id="wrongBtn">✗ I missed it</button>
+    </div>
+  </div>
+
+  <footer>Stats reset when you reload the page — it's all in-memory, just for this session's practice run.</footer>
+</div>
+
+<script>
+/* ============================ helpers ============================ */
+function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function randChoice(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function sampleWithout(arr, exclude, n) {
+  const pool = arr.filter(x => x !== exclude);
+  const out = [];
+  while (out.length < n && pool.length) {
+    const idx = Math.floor(Math.random() * pool.length);
+    out.push(pool.splice(idx, 1)[0]);
+  }
+  return out;
+}
+
+/* ============================ VOCAB DATA ============================ */
+const work = [
+  ["el trabajo","job/work"], ["la empresa","company"], ["el jefe / la jefa","boss"], ["el sueldo","salary"],
+  ["la entrevista","interview"], ["el currículum","resume/CV"], ["la reunión","meeting"], ["el empleado","employee (m)"],
+  ["la empleada","employee (f)"], ["renunciar","to resign"], ["contratar","to hire"], ["despedir","to fire"],
+  ["jubilarse","to retire"], ["el horario","schedule"]
+];
+const environment = [
+  ["el medio ambiente","environment"], ["la contaminación","pollution"], ["reciclar","to recycle"], ["el reciclaje","recycling"],
+  ["la basura","trash"], ["proteger","to protect"], ["el calentamiento global","global warming"], ["la energía solar","solar energy"],
+  ["el bosque","forest"], ["la especie","species"], ["en peligro de extinción","endangered"], ["ahorrar","to save/conserve"],
+  ["sostenible","sustainable"], ["el recurso natural","natural resource"]
+];
+const health = [
+  ["la salud","health"], ["el dolor","pain"], ["la fiebre","fever"], ["la receta","prescription"],
+  ["el resfriado","cold (illness)"], ["la enfermedad","illness"], ["el jarabe","cough syrup"], ["la sala de emergencias","emergency room"],
+  ["la cita médica","doctor's appointment"], ["el síntoma","symptom"], ["recuperarse","to recover"], ["lastimarse","to hurt oneself"],
+  ["respirar","to breathe"], ["la presión arterial","blood pressure"]
+];
+const idioms = [
+  ["estar en las nubes","to be daydreaming"], ["costar un ojo de la cara","to cost an arm and a leg"],
+  ["tomar el pelo","to pull someone's leg / tease"], ["no tener pelos en la lengua","to not mince words"],
+  ["ser pan comido","to be a piece of cake (easy)"], ["meter la pata","to mess up / put your foot in it"],
+  ["hablar por los codos","to talk a lot / chatter"], ["dar en el clavo","to hit the nail on the head"],
+  ["estar como pez en el agua","to be in one's element"], ["no dar pie con bola","to not get anything right"],
+  ["ponerse las pilas","to get one's act together"], ["ser uña y carne","to be inseparable"]
+];
+
+/* subject pronouns, reused across verb-tense drills */
+const pronouns = [
+  ["yo","I"], ["tú","you (informal)"], ["él/ella/usted","he/she/you (formal)"], ["nosotros","we"], ["ellos/ellas/ustedes","they/you all"]
+];
+
+/* ============================ VOCABULARY GENERATOR ============================ */
+function genVocabDrill(bank, categoryLabel) {
+  const [word, meaning] = randChoice(bank);
+  const toSpanish = Math.random() < 0.5;
+  const prompt = toSpanish ? meaning : word;
+  const answer = toSpanish ? word : meaning;
+  const otherWords = sampleWithout(bank.map(b => b[0]), word, 3);
+  return {
+    category: `Vocabulary &middot; ${categoryLabel}`,
+    prompt: toSpanish
+      ? `Translate to Spanish:<br><span class="es">"${prompt}"</span>`
+      : `Translate to English:<br><span class="es">"${prompt}"</span>`,
+    hints: toSpanish
+      ? [
+          `This word is in the "${categoryLabel}" group you're studying — picture it before guessing.`,
+          `It starts with the letter "${word[0]}" and has ${word.length} letters.`,
+          `A couple of near neighbors in this set: ${otherWords.slice(0,2).join(", ")} — but not those. It's "${word}".`
+        ]
+      : [
+          `This is a ${categoryLabel.toLowerCase()} word — think about what it looks/sounds like in English.`,
+          `It starts with "${meaning[0]}".`,
+          `Full word: it means "${meaning}".`
+        ],
+    answer: `${answer}`
+  };
+}
+
+/* ============================ FUTURE TENSE ============================ */
+const regularFutureConditionalVerbs = [
+  { inf:"hablar", en:"to speak" }, { inf:"comer", en:"to eat" }, { inf:"vivir", en:"to live" },
+  { inf:"trabajar", en:"to work" }, { inf:"escribir", en:"to write" }, { inf:"viajar", en:"to travel" },
+  { inf:"estudiar", en:"to study" }
+];
+const futureEndings = ["é","ás","á","emos","án"];
+const conditionalEndings = ["ía","ías","ía","íamos","ían"];
+
+function genFutureRegular() {
+  const verb = randChoice(regularFutureConditionalVerbs);
+  const pIdx = randInt(0, 4);
+  const [pronoun, pronounEn] = pronouns[pIdx];
+  const answer = verb.inf + futureEndings[pIdx];
+  return {
+    category: `Future Tense &middot; ${verb.inf} (regular)`,
+    prompt: `Conjugate <span class="es">"${verb.inf}"</span> <small>(${verb.en})</small> in the FUTURE for:<br><span class="es">"${pronoun}" (${pronounEn})</span>`,
+    hints: [
+      "The future tense of regular verbs is formed by adding endings directly to the FULL INFINITIVE — no need to drop anything.",
+      `For "${pronoun}", the future ending is "-${futureEndings[pIdx]}".`,
+      `"${verb.inf}" + "${futureEndings[pIdx]}" = "${answer}".`
+    ],
+    answer
+  };
+}
+
+const futureIrregularStems = {
+  tener:  { en:"to have",          stem:"tendr" },
+  poder:  { en:"to be able to",    stem:"podr" },
+  poner:  { en:"to put",           stem:"pondr" },
+  salir:  { en:"to leave",         stem:"saldr" },
+  hacer:  { en:"to do/make",       stem:"har" },
+  decir:  { en:"to say/tell",      stem:"dir" },
+  querer: { en:"to want",          stem:"querr" },
+  saber:  { en:"to know",          stem:"sabr" },
+  venir:  { en:"to come",          stem:"vendr" }
+};
+function genFutureIrregular() {
+  const keys = Object.keys(futureIrregularStems);
+  const verb = randChoice(keys);
+  const data = futureIrregularStems[verb];
+  const pIdx = randInt(0, 4);
+  const [pronoun, pronounEn] = pronouns[pIdx];
+  const answer = data.stem + futureEndings[pIdx];
+  return {
+    category: `Future Tense &middot; ${verb} (irregular stem)`,
+    prompt: `Conjugate <span class="es">"${verb}"</span> <small>(${data.en})</small> in the FUTURE for:<br><span class="es">"${pronoun}" (${pronounEn})</span>`,
+    hints: [
+      `"${verb}" doesn't use its infinitive as the future stem — it has an irregular stem that must be memorized: "${data.stem}-".`,
+      "Once you have the irregular stem, the endings are the same regular future endings: -é, -ás, -á, -emos, -án.",
+      `For "${pronoun}": "${data.stem}" + "${futureEndings[pIdx]}" = "${answer}".`
+    ],
+    answer
+  };
+}
+
+/* ============================ CONDITIONAL TENSE ============================ */
+function genConditionalRegular() {
+  const verb = randChoice(regularFutureConditionalVerbs);
+  const pIdx = randInt(0, 4);
+  const [pronoun, pronounEn] = pronouns[pIdx];
+  const answer = verb.inf + conditionalEndings[pIdx];
+  return {
+    category: `Conditional Tense &middot; ${verb.inf} (regular)`,
+    prompt: `Conjugate <span class="es">"${verb.inf}"</span> <small>(${verb.en})</small> in the CONDITIONAL (would ___) for:<br><span class="es">"${pronoun}" (${pronounEn})</span>`,
+    hints: [
+      "The conditional of regular verbs is formed by adding endings to the FULL INFINITIVE — the same endings as the imperfect of -er/-ir verbs.",
+      `For "${pronoun}", the conditional ending is "-${conditionalEndings[pIdx]}".`,
+      `"${verb.inf}" + "${conditionalEndings[pIdx]}" = "${answer}".`
+    ],
+    answer
+  };
+}
+function genConditionalIrregular() {
+  const keys = Object.keys(futureIrregularStems);
+  const verb = randChoice(keys);
+  const data = futureIrregularStems[verb];
+  const pIdx = randInt(0, 4);
+  const [pronoun, pronounEn] = pronouns[pIdx];
+  const answer = data.stem + conditionalEndings[pIdx];
+  return {
+    category: `Conditional Tense &middot; ${verb} (irregular stem)`,
+    prompt: `Conjugate <span class="es">"${verb}"</span> <small>(${data.en})</small> in the CONDITIONAL (would ___) for:<br><span class="es">"${pronoun}" (${pronounEn})</span>`,
+    hints: [
+      "The conditional uses the SAME irregular stems as the future tense.",
+      `"${verb}"'s irregular stem is "${data.stem}-".`,
+      `For "${pronoun}": "${data.stem}" + "${conditionalEndings[pIdx]}" = "${answer}".`
+    ],
+    answer
+  };
+}
+
+/* ============================ PRESENT SUBJUNCTIVE ============================ */
+const regularSubjunctiveVerbs = [
+  { inf:"hablar", en:"to speak", type:"ar", stem:"habl" },
+  { inf:"comer",  en:"to eat",   type:"er", stem:"com" },
+  { inf:"vivir",  en:"to live",  type:"ir", stem:"viv" },
+  { inf:"estudiar", en:"to study", type:"ar", stem:"estudi" },
+  { inf:"escribir", en:"to write", type:"ir", stem:"escrib" },
+  { inf:"correr", en:"to run",   type:"er", stem:"corr" }
+];
+const subjEndingsAr = ["e","es","e","emos","en"];
+const subjEndingsErIr = ["a","as","a","amos","an"];
+const subjTriggers = [
+  "Espero que", "Dudo que", "Es importante que", "Recomiendo que", "Ojalá que",
+  "Es necesario que", "Quiero que", "Prefiero que", "Es posible que", "No creo que"
+];
+function genSubjunctiveRegular() {
+  const verb = randChoice(regularSubjunctiveVerbs);
+  const pIdx = randInt(0, 4);
+  const [pronoun, pronounEn] = pronouns[pIdx];
+  const trigger = randChoice(subjTriggers);
+  const endings = verb.type === "ar" ? subjEndingsAr : subjEndingsErIr;
+  const answer = verb.stem + endings[pIdx];
+  return {
+    category: `Present Subjunctive &middot; ${verb.inf} (regular)`,
+    prompt: `Complete with the correct PRESENT SUBJUNCTIVE form of <span class="es">"${verb.inf}"</span> <small>(${verb.en})</small>:<br><span class="es">"${trigger} ${pronoun} ___"</span>`,
+    hints: [
+      `"${trigger}" expresses a wish, doubt, emotion, recommendation, or influence over someone else — these trigger phrases require the subjunctive in the clause that follows.`,
+      `To form the present subjunctive, take the stem "${verb.stem}-" and add the "opposite vowel" ending: -ar verbs use e-endings, -er/-ir verbs use a-endings. For "${pronoun}", that's "-${endings[pIdx]}".`,
+      `"${verb.stem}" + "${endings[pIdx]}" = "${answer}".`
+    ],
+    answer
+  };
+}
+
+const subjunctiveIrregular = {
+  ser:   { en:"to be",              forms:["sea","seas","sea","seamos","sean"] },
+  estar: { en:"to be",              forms:["esté","estés","esté","estemos","estén"] },
+  ir:    { en:"to go",              forms:["vaya","vayas","vaya","vayamos","vayan"] },
+  saber: { en:"to know",            forms:["sepa","sepas","sepa","sepamos","sepan"] },
+  dar:   { en:"to give",            forms:["dé","des","dé","demos","den"] },
+  haber: { en:"to have (auxiliary)", forms:["haya","hayas","haya","hayamos","hayan"] }
+};
+function genSubjunctiveIrregular() {
+  const keys = Object.keys(subjunctiveIrregular);
+  const verb = randChoice(keys);
+  const data = subjunctiveIrregular[verb];
+  const pIdx = randInt(0, 4);
+  const [pronoun, pronounEn] = pronouns[pIdx];
+  const trigger = randChoice(subjTriggers);
+  const answer = data.forms[pIdx];
+  return {
+    category: `Present Subjunctive &middot; ${verb} (irregular)`,
+    prompt: `Complete with the correct PRESENT SUBJUNCTIVE form of <span class="es">"${verb}"</span> <small>(${data.en})</small>:<br><span class="es">"${trigger} ${pronoun} ___"</span>`,
+    hints: [
+      `"${verb}" is one of a handful of verbs with a completely irregular present subjunctive stem — it doesn't follow the regular pattern.`,
+      `The full set is: ${pronouns.map((p,i)=>`${p[0]} → ${data.forms[i]}`).join(", ")}.`,
+      `For "${pronoun}", the correct form is "${answer}".`
+    ],
+    answer
+  };
+}
+
+/* ============================ PRESENT PERFECT / PAST PERFECT ============================ */
+const perfectVerbs = [
+  { inf:"hablar", en:"to speak", part:"hablado" },
+  { inf:"comer", en:"to eat", part:"comido" },
+  { inf:"vivir", en:"to live", part:"vivido" },
+  { inf:"trabajar", en:"to work", part:"trabajado" },
+  { inf:"salir", en:"to leave/go out", part:"salido" },
+  { inf:"abrir", en:"to open", part:"abierto", irregular:true },
+  { inf:"decir", en:"to say/tell", part:"dicho", irregular:true },
+  { inf:"escribir", en:"to write", part:"escrito", irregular:true },
+  { inf:"hacer", en:"to do/make", part:"hecho", irregular:true },
+  { inf:"poner", en:"to put", part:"puesto", irregular:true },
+  { inf:"ver", en:"to see", part:"visto", irregular:true },
+  { inf:"volver", en:"to return", part:"vuelto", irregular:true },
+  { inf:"romper", en:"to break", part:"roto", irregular:true }
+];
+const haberPresent = ["he","has","ha","hemos","han"];
+const haberImperfect = ["había","habías","había","habíamos","habían"];
+
+function genPresentPerfect() {
+  const verb = randChoice(perfectVerbs);
+  const pIdx = randInt(0, 4);
+  const [pronoun, pronounEn] = pronouns[pIdx];
+  const answer = `${haberPresent[pIdx]} ${verb.part}`;
+  return {
+    category: `Present Perfect &middot; ${verb.inf}${verb.irregular ? " (irregular participle)" : ""}`,
+    prompt: `Conjugate <span class="es">"${verb.inf}"</span> <small>(${verb.en})</small> in the PRESENT PERFECT (has/have ___) for:<br><span class="es">"${pronoun}" (${pronounEn})</span>`,
+    hints: [
+      "The present perfect = present tense of haber (he/has/ha/hemos/han) + the past participle.",
+      verb.irregular
+        ? `"${verb.inf}" has an IRREGULAR past participle that must be memorized: "${verb.part}".`
+        : `Regular participles: -ar verbs → -ado, -er/-ir verbs → -ido. "${verb.inf}" → "${verb.part}".`,
+      `For "${pronoun}", haber is "${haberPresent[pIdx]}", so the full form is "${answer}".`
+    ],
+    answer
+  };
+}
+
+function genPastPerfect() {
+  const verb = randChoice(perfectVerbs);
+  const pIdx = randInt(0, 4);
+  const [pronoun, pronounEn] = pronouns[pIdx];
+  const answer = `${haberImperfect[pIdx]} ${verb.part}`;
+  return {
+    category: `Past Perfect &middot; ${verb.inf}${verb.irregular ? " (irregular participle)" : ""}`,
+    prompt: `Conjugate <span class="es">"${verb.inf}"</span> <small>(${verb.en})</small> in the PAST PERFECT / PLUPERFECT (had ___) for:<br><span class="es">"${pronoun}" (${pronounEn})</span>`,
+    hints: [
+      "The past perfect = imperfect tense of haber (había/habías/había/habíamos/habían) + the past participle. It describes something that happened before another past action.",
+      verb.irregular
+        ? `"${verb.inf}" has an IRREGULAR past participle: "${verb.part}".`
+        : `Regular participles: -ar verbs → -ado, -er/-ir verbs → -ido. "${verb.inf}" → "${verb.part}".`,
+      `For "${pronoun}", haber is "${haberImperfect[pIdx]}", so the full form is "${answer}".`
+    ],
+    answer
+  };
+}
+
+/* ============================ FORMAL COMMANDS (usted/ustedes) ============================ */
+const formalCommandVerbsRegular = [
+  { inf:"hablar", en:"to speak", stem:"habl", type:"ar" },
+  { inf:"comer", en:"to eat", stem:"com", type:"er" },
+  { inf:"escribir", en:"to write", stem:"escrib", type:"ir" },
+  { inf:"estudiar", en:"to study", stem:"estudi", type:"ar" },
+  { inf:"correr", en:"to run", stem:"corr", type:"er" },
+  { inf:"abrir", en:"to open", stem:"abr", type:"ir" },
+  { inf:"viajar", en:"to travel", stem:"viaj", type:"ar" }
+];
+const formalIrregular = {
+  dar:    { en:"to give",      usted:"dé",    ustedes:"den" },
+  estar:  { en:"to be",        usted:"esté",  ustedes:"estén" },
+  ir:     { en:"to go",        usted:"vaya",  ustedes:"vayan" },
+  saber:  { en:"to know",      usted:"sepa",  ustedes:"sepan" },
+  ser:    { en:"to be",        usted:"sea",   ustedes:"sean" },
+  decir:  { en:"to say/tell",  usted:"diga",  ustedes:"digan" },
+  hacer:  { en:"to do/make",   usted:"haga",  ustedes:"hagan" },
+  poner:  { en:"to put",       usted:"ponga", ustedes:"pongan" },
+  salir:  { en:"to leave",     usted:"salga", ustedes:"salgan" },
+  tener:  { en:"to have",      usted:"tenga", ustedes:"tengan" },
+  venir:  { en:"to come",      usted:"venga", ustedes:"vengan" }
+};
+function genFormalCommand() {
+  const usePlural = Math.random() < 0.5;
+  const isNegative = Math.random() < 0.5;
+  const useIrregular = Math.random() < 0.35;
+  let verbLabel, enLabel, form, category;
+
+  if (useIrregular) {
+    const keys = Object.keys(formalIrregular);
+    verbLabel = randChoice(keys);
+    const data = formalIrregular[verbLabel];
+    enLabel = data.en;
+    form = usePlural ? data.ustedes : data.usted;
+    category = `Commands &middot; ${usePlural ? "ustedes" : "usted"} (irregular)`;
+  } else {
+    const verb = randChoice(formalCommandVerbsRegular);
+    verbLabel = verb.inf;
+    enLabel = verb.en;
+    const ustedEnding = verb.type === "ar" ? "e" : "a";
+    const ustedesEnding = verb.type === "ar" ? "en" : "an";
+    form = verb.stem + (usePlural ? ustedesEnding : ustedEnding);
+    category = `Commands &middot; ${usePlural ? "ustedes" : "usted"} (regular)`;
+  }
+
+  const answer = isNegative ? `no ${form}` : form;
+  return {
+    category,
+    prompt: `Give the ${isNegative ? 'NEGATIVE' : 'AFFIRMATIVE'} ${usePlural ? 'ustedes' : 'usted'} command for:<br><span class="es">"${verbLabel}"</span> <small>(${enLabel})</small>`,
+    hints: [
+      "Formal commands (usted/ustedes) are built from the present subjunctive form — and unlike tú commands, the affirmative and negative use the SAME form (just add 'no' for negative).",
+      useIrregular
+        ? `"${verbLabel}" has an irregular command stem — usted = "${formalIrregular[verbLabel].usted}", ustedes = "${formalIrregular[verbLabel].ustedes}".`
+        : `-ar verbs flip to an 'e/en' ending; -er/-ir verbs flip to an 'a/an' ending. Here that gives "${form}".`,
+      `The correct answer is "${answer}".`
+    ],
+    answer
+  };
+}
+
+/* ============================ DOUBLE OBJECT PRONOUNS ============================ */
+const doubleObjectItems = [
+  { subject:"Yo", verb:"doy", verbEn:"give", noun:"el regalo", nounEn:"the gift", recipientPhrase:"a mi hermano", recipientEn:"to my brother", indirectPronoun:"le", directPronoun:"lo", needsSe:true },
+  { subject:"Tú", verb:"escribes", verbEn:"write", noun:"la carta", nounEn:"the letter", recipientPhrase:"a mí", recipientEn:"to me", indirectPronoun:"me", directPronoun:"la", needsSe:false },
+  { subject:"Ella", verb:"compra", verbEn:"buys", noun:"los boletos", nounEn:"the tickets", recipientPhrase:"a nosotros", recipientEn:"to us", indirectPronoun:"nos", directPronoun:"los", needsSe:false },
+  { subject:"Nosotros", verb:"mandamos", verbEn:"send", noun:"las fotos", nounEn:"the photos", recipientPhrase:"a ellos", recipientEn:"to them", indirectPronoun:"les", directPronoun:"las", needsSe:true },
+  { subject:"Él", verb:"presta", verbEn:"lends", noun:"el coche", nounEn:"the car", recipientPhrase:"a ti", recipientEn:"to you", indirectPronoun:"te", directPronoun:"lo", needsSe:false },
+  { subject:"Ustedes", verb:"muestran", verbEn:"show", noun:"la solución", nounEn:"the solution", recipientPhrase:"a ella", recipientEn:"to her", indirectPronoun:"le", directPronoun:"la", needsSe:true }
+];
+function genDoubleObjectPronouns() {
+  const item = randChoice(doubleObjectItems);
+  const finalIndirect = item.needsSe ? "se" : item.indirectPronoun;
+  const answer = `${item.subject} ${finalIndirect} ${item.directPronoun} ${item.verb}.`;
+  return {
+    category: "Grammar &middot; Double Object Pronouns",
+    prompt: `Rewrite the sentence using double object pronouns (indirect + direct):<br><span class="es">"${item.subject} ${item.verb} ${item.noun} ${item.recipientPhrase}."</span> <small>(${item.subject} ${item.verbEn} ${item.nounEn} ${item.recipientEn}.)</small>`,
+    hints: [
+      `First find the indirect object pronoun for "${item.recipientPhrase}" — that's "${item.indirectPronoun}" — and the direct object pronoun for "${item.noun}" — that's "${item.directPronoun}".`,
+      item.needsSe
+        ? `When "le" or "les" comes right before "lo/la/los/las", it changes to "se" — so "${item.indirectPronoun}" + "${item.directPronoun}" becomes "se ${item.directPronoun}".`
+        : `Since the indirect pronoun here isn't "le/les", no change is needed — just place the indirect pronoun before the direct one.`,
+      `Both pronouns go before the conjugated verb, indirect before direct: "${answer}"`
+    ],
+    answer
+  };
+}
+
+/* ============================ RELATIVE PRONOUNS ============================ */
+const relativePronounItems = [
+  { sentence:"La mujer ___ vive al lado es doctora.", answer:"que", why:'"que" is the all-purpose relative pronoun for people or things in a restrictive clause' },
+  { sentence:"Mi amigo, ___ es de España, habla tres idiomas.", answer:"quien", why:'"quien" refers to a person, often set off by commas (non-restrictive clause)' },
+  { sentence:"No entiendo ___ dices.", answer:"lo que", why:'"lo que" means "what/that which" — it refers to an idea rather than a specific noun' },
+  { sentence:"El libro ___ compré es interesante.", answer:"que", why:'"que" as the object of the clause, referring back to "el libro"' },
+  { sentence:"___ me gusta de este trabajo es el horario.", answer:"Lo que", why:'"Lo que" starting a sentence means "what" (the thing that)' },
+  { sentence:"Los estudiantes con ___ hablé eran simpáticos.", answer:"quienes", why:'after a preposition ("con"), referring to people, Spanish requires "quien/quienes" instead of "que"' },
+  { sentence:"Esta es la casa en ___ crecí.", answer:"que", why:'after most prepositions with things (not people), "que" is standard ("en que" = "in which")' }
+];
+function genRelativePronoun() {
+  const item = randChoice(relativePronounItems);
+  return {
+    category: "Grammar &middot; Relative Pronouns",
+    prompt: `Choose the correct relative pronoun (que / quien(es) / lo que):<br><span class="es">"${item.sentence}"</span>`,
+    hints: [
+      '"Que" works for people or things in most clauses. "Quien/quienes" replaces "que" for people right after a comma or a preposition. "Lo que" means "what/that which" and refers to an idea, not a specific noun.',
+      item.why,
+      `The correct answer is "${item.answer}".`
+    ],
+    answer: item.answer
+  };
+}
+
+/* ============================ SI CLAUSES ============================ */
+const siClauseItems = [
+  { blank:"Si ___ (tener) tiempo, iré al cine.", type:"real", answer:"tengo", full:"Si tengo tiempo, iré al cine.", en:"If I have time, I will go to the movies." },
+  { blank:"Si estudias más, ___ (sacar) mejores notas.", type:"real", answer:"sacarás", full:"Si estudias más, sacarás mejores notas.", en:"If you study more, you will get better grades." },
+  { blank:"Si llueve mañana, no ___ (salir) nosotros.", type:"real", answer:"saldremos", full:"Si llueve mañana, no saldremos nosotros.", en:"If it rains tomorrow, we won't go out." },
+  { blank:"Si ___ (ser) rico, viajaría por todo el mundo.", type:"hypothetical", answer:"fuera", full:"Si fuera rico, viajaría por todo el mundo.", en:"If I were rich, I would travel all over the world." },
+  { blank:"Si tú me ___ (ayudar), terminaríamos más rápido.", type:"hypothetical", answer:"ayudaras", full:"Si tú me ayudaras, terminaríamos más rápido.", en:"If you helped me, we would finish faster." },
+  { blank:"Si ella ___ (tener) más dinero, compraría una casa.", type:"hypothetical", answer:"tuviera", full:"Si ella tuviera más dinero, compraría una casa.", en:"If she had more money, she would buy a house." }
+];
+function genSiClause() {
+  const item = randChoice(siClauseItems);
+  return {
+    category: `Grammar &middot; Si Clauses (${item.type === "real" ? "real/possible" : "hypothetical"})`,
+    prompt: `Complete the "si" clause sentence with the correct verb form:<br><span class="es">"${item.blank}"</span> <small>(${item.en})</small>`,
+    hints: [
+      item.type === "real"
+        ? "This describes something REAL or LIKELY — the pattern is: si + PRESENT tense, ... + FUTURE tense."
+        : "This describes something HYPOTHETICAL or CONTRARY TO FACT — the pattern is: si + IMPERFECT SUBJUNCTIVE, ... + CONDITIONAL tense.",
+      item.type === "real"
+        ? "The \"si\" clause verb stays in the present indicative here, just like English."
+        : "The imperfect subjunctive is formed from the preterite 'ellos' form: drop '-ron' and add -ra, -ras, -ra, -ramos, -ran.",
+      `The correct form is "${item.answer}". Full sentence: "${item.full}"`
+    ],
+    answer: item.answer
+  };
+}
+
+/* ============================ PASSIVE / IMPERSONAL SE ============================ */
+const seConstructionItems = [
+  { subject:"el español", infinitive:"hablar", en:"Spanish is spoken here.", verbForm:"habla", extra:"aquí" },
+  { subject:"los libros usados", infinitive:"vender", en:"Used books are sold in that store.", verbForm:"venden", extra:"en esa tienda" },
+  { subject:"las tiendas", infinitive:"cerrar", en:"The stores close at nine (impersonal se).", verbForm:"cierran", extra:"a las nueve" },
+  { subject:"la puerta", infinitive:"abrir", en:"The door is opened at eight.", verbForm:"abre", extra:"a las ocho" },
+  { subject:"los boletos", infinitive:"vender", en:"Tickets are sold online.", verbForm:"venden", extra:"en línea" },
+  { subject:"la tarea", infinitive:"hacer", en:"Homework is done every night.", verbForm:"hace", extra:"todas las noches" }
+];
+function genPassiveSe() {
+  const item = randChoice(seConstructionItems);
+  const isPlural = /^(los|las)/.test(item.subject);
+  return {
+    category: "Grammar &middot; Passive/Impersonal Se",
+    prompt: `Complete the passive/impersonal "se" construction:<br><span class="es">"Se ___ (${item.infinitive}) ${item.subject} ${item.extra}."</span> <small>(${item.en})</small>`,
+    hints: [
+      "In passive/impersonal 'se' constructions, the verb agrees in number with the noun that follows it — singular subject → singular verb, plural subject → plural verb.",
+      `"${item.subject}" is ${isPlural ? "plural" : "singular"}, so the verb must be in the ${isPlural ? "plural (-n)" : "singular"} form.`,
+      `The correct answer is "${item.verbForm}".`
+    ],
+    answer: item.verbForm
+  };
+}
+
+/* ============================ topics / registry ============================ */
+const TOPICS = {
+  work:          { label: "Vocabulary: Work & Professions",     gens: [() => genVocabDrill(work, "Work & Professions")] },
+  environment:   { label: "Vocabulary: Environment & Nature",   gens: [() => genVocabDrill(environment, "Environment & Nature")] },
+  health:        { label: "Vocabulary: Health & Body",          gens: [() => genVocabDrill(health, "Health & Body")] },
+  idioms:        { label: "Vocabulary: Idiomatic Expressions",  gens: [() => genVocabDrill(idioms, "Idiomatic Expressions")] },
+  future:        { label: "Future Tense",                       gens: [genFutureRegular, genFutureIrregular] },
+  conditional:   { label: "Conditional Tense",                  gens: [genConditionalRegular, genConditionalIrregular] },
+  subjunctive:   { label: "Present Subjunctive",                gens: [genSubjunctiveRegular, genSubjunctiveIrregular] },
+  perfect:       { label: "Present Perfect",                    gens: [genPresentPerfect] },
+  pluperfect:    { label: "Past Perfect (Pluperfect)",          gens: [genPastPerfect] },
+  formalcmds:    { label: "Commands (usted/ustedes)",           gens: [genFormalCommand] },
+  doubleobj:     { label: "Double Object Pronouns",             gens: [genDoubleObjectPronouns] },
+  relative:      { label: "Relative Pronouns",                  gens: [genRelativePronoun] },
+  siclauses:     { label: "Si Clauses",                         gens: [genSiClause] },
+  passivese:     { label: "Passive/Impersonal Se",              gens: [genPassiveSe] }
+};
+
+/* ============================ app state ============================ */
+let current = null;
+let hintsShown = 0;
+let answerShown = false;
+let timerStart = null;
+let timerInterval = null;
+let stats = { seen: 0, correct: 0, streak: 0, best: 0, totalTime: 0, timedCount: 0 };
+
+const filterGrid = document.getElementById('filterGrid');
+Object.entries(TOPICS).forEach(([key, t]) => {
+  const label = document.createElement('label');
+  label.innerHTML = `<input type="checkbox" checked data-topic="${key}"> ${t.label}`;
+  filterGrid.appendChild(label);
+});
+
+function activeGenerators() {
+  const checked = [...filterGrid.querySelectorAll('input[type=checkbox]:checked')].map(cb => cb.dataset.topic);
+  let pool = [];
+  checked.forEach(key => { pool = pool.concat(TOPICS[key].gens); });
+  if (pool.length === 0) {
+    Object.values(TOPICS).forEach(t => pool = pool.concat(t.gens));
+  }
+  return pool;
+}
+
+function fmtTime(sec) {
+  const m = Math.floor(sec / 60), s = Math.floor(sec % 60);
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+function updateStatsUI() {
+  document.getElementById('statSeen').textContent = stats.seen;
+  document.getElementById('statCorrect').textContent = stats.correct;
+  document.getElementById('statStreak').textContent = stats.streak;
+  document.getElementById('statBest').textContent = stats.best;
+  document.getElementById('statAvg').textContent = stats.timedCount ? fmtTime(stats.totalTime / stats.timedCount) : '–';
+}
+
+function startTimer() {
+  timerStart = Date.now();
+  const el = document.getElementById('timerDisplay');
+  el.classList.add('running');
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    el.textContent = fmtTime((Date.now() - timerStart) / 1000);
+  }, 250);
+}
+function stopTimer() {
+  clearInterval(timerInterval);
+  document.getElementById('timerDisplay').classList.remove('running');
+  return timerStart ? (Date.now() - timerStart) / 1000 : 0;
+}
+
+function newProblem() {
+  const pool = activeGenerators();
+  const gen = randChoice(pool);
+  current = gen();
+  hintsShown = 0;
+  answerShown = false;
+
+  document.getElementById('catBadge').textContent = current.category.replace(/&middot;/g, '·');
+  document.getElementById('problemText').innerHTML = current.prompt;
+  document.getElementById('hintArea').innerHTML = '';
+  document.getElementById('assessArea').style.display = 'none';
+
+  const hintBtn = document.getElementById('hintBtn');
+  hintBtn.disabled = false;
+  hintBtn.textContent = 'Show Hint (1/3)';
+  document.getElementById('answerBtn').disabled = false;
+  document.getElementById('answerBtn').textContent = 'Show Answer';
+
+  startTimer();
+}
+
+function showNextHint() {
+  if (!current || hintsShown >= current.hints.length) return;
+  const box = document.createElement('div');
+  box.className = 'hint-box';
+  box.innerHTML = `<span class="hnum">Hint ${hintsShown + 1}:</span>${current.hints[hintsShown]}`;
+  document.getElementById('hintArea').appendChild(box);
+  hintsShown++;
+  const hintBtn = document.getElementById('hintBtn');
+  if (hintsShown >= current.hints.length) {
+    hintBtn.disabled = true;
+    hintBtn.textContent = 'No more hints';
+  } else {
+    hintBtn.textContent = `Show Hint (${hintsShown + 1}/${current.hints.length})`;
+  }
+}
+
+function revealAnswer() {
+  if (!current || answerShown) return;
+  answerShown = true;
+  const box = document.createElement('div');
+  box.className = 'answer-box';
+  box.innerHTML = `<span class="albl">Answer:</span>${current.answer}`;
+  document.getElementById('hintArea').appendChild(box);
+  document.getElementById('answerBtn').disabled = true;
+  document.getElementById('answerBtn').textContent = 'Answer shown';
+  document.getElementById('assessArea').style.display = 'flex';
+  stopTimer();
+}
+
+function markResult(correct) {
+  const elapsed = timerStart ? (Date.now() - timerStart) / 1000 : 0;
+  stats.seen++;
+  stats.totalTime += elapsed;
+  stats.timedCount++;
+  if (correct) {
+    stats.correct++;
+    stats.streak++;
+    if (stats.streak > stats.best) stats.best = stats.streak;
+  } else {
+    stats.streak = 0;
+  }
+  updateStatsUI();
+  newProblem();
+}
+
+document.getElementById('hintBtn').addEventListener('click', showNextHint);
+document.getElementById('answerBtn').addEventListener('click', revealAnswer);
+document.getElementById('skipBtn').addEventListener('click', () => { stopTimer(); newProblem(); });
+document.getElementById('rightBtn').addEventListener('click', () => markResult(true));
+document.getElementById('wrongBtn').addEventListener('click', () => markResult(false));
+filterGrid.addEventListener('change', () => { /* filters apply to the next problem automatically */ });
+
+updateStatsUI();
+newProblem();
+</script>
+</body>
+</html>
