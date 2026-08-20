@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spanish Practice Hub</title>
+<style>
+  :root{
+    --bg:#1a1025;
+    --panel:#241833;
+    --panel2:#2c1f40;
+    --border:#40305a;
+    --text:#f5ecf8;
+    --muted:#b49bc7;
+    --accent:#ff6b6b;
+    --accent2:#ffc857;
+    --good:#4fd6a8;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:radial-gradient(1200px 800px at 20% -10%, #351e4d 0%, var(--bg) 55%) fixed;
+    color:var(--text);
+    font-family:"Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:40px 16px 60px;
+  }
+  .wrap{ width:100%; max-width:920px; }
+  header{ text-align:center; margin-bottom:36px; }
+  header h1{
+    margin:0 0 10px;
+    font-size:2.2rem;
+    letter-spacing:0.2px;
+    background:linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  header p{ margin:0 auto; max-width:560px; color:var(--muted); font-size:1rem; line-height:1.5; }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
+    gap:20px;
+  }
+
+  .card{
+    background:linear-gradient(180deg, var(--panel2), var(--panel));
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:24px 22px;
+    box-shadow:0 12px 30px -14px rgba(0,0,0,0.6);
+    display:flex;
+    flex-direction:column;
+    text-decoration:none;
+    color:var(--text);
+    transition:transform 0.12s ease, border-color 0.15s ease;
+    position:relative;
+    overflow:hidden;
+  }
+  .card:hover{ transform:translateY(-3px); border-color:var(--accent); }
+  .card:focus-visible{ outline:2px solid var(--accent2); outline-offset:2px; }
+
+  .card-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    margin-bottom:10px;
+    gap:10px;
+  }
+  .level{
+    display:inline-block;
+    background:rgba(255,107,107,0.15);
+    color:var(--accent);
+    border:1px solid rgba(255,107,107,0.35);
+    padding:3px 10px;
+    border-radius:999px;
+    font-size:0.72rem;
+    font-weight:700;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+  }
+  .level.beginner{ color:var(--good); background:rgba(79,214,168,0.15); border-color:rgba(79,214,168,0.35); }
+  .level.intermediate{ color:var(--accent2); background:rgba(255,200,87,0.15); border-color:rgba(255,200,87,0.35); }
+  .level.advanced{ color:var(--accent); background:rgba(255,107,107,0.15); border-color:rgba(255,107,107,0.35); }
+  .level.culture{ color:#c79bff; background:rgba(199,155,255,0.15); border-color:rgba(199,155,255,0.35); }
+
+  .arrow{ color:var(--muted); font-size:1.2rem; transition:transform 0.12s ease; }
+  .card:hover .arrow{ transform:translateX(3px); color:var(--accent2); }
+
+  .card h2{ margin:0 0 8px; font-size:1.25rem; }
+  .card p{ margin:0; color:var(--muted); font-size:0.9rem; line-height:1.55; flex-grow:1; }
+
+  .status{
+    margin-top:16px;
+    font-size:0.78rem;
+    color:var(--muted);
+    border-top:1px solid var(--border);
+    padding-top:12px;
+  }
+  .status.ready{ color:var(--good); }
+  .status.wip{ color:var(--accent2); }
+
+  .card.disabled{ cursor:default; opacity:0.85; }
+  .card.disabled:hover{ transform:none; border-color:var(--border); }
+
+  footer{ margin-top:40px; text-align:center; color:var(--muted); font-size:0.78rem; }
+  footer code{ background:var(--panel); border:1px solid var(--border); padding:2px 6px; border-radius:6px; color:var(--accent2); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Spanish Practice Hub</h1>
+    <p>Endless drills and reference material for Spanish 1 through 3, plus a growing collection of cultural phrases. Pick a level below to start practicing.</p>
+  </header>
+
+  <div class="grid">
+
+    <a class="card" href="spanish1.html">
+      <div class="card-top">
+        <span class="level beginner">Beginner</span>
+        <span class="arrow">&rarr;</span>
+      </div>
+      <h2>Spanish 1 Endless Drill</h2>
+      <p>Colors, animals, food, family, common phrases, numbers, days &amp; months, el/la, and basic verb conjugation.</p>
+      <div class="status ready">Ready</div>
+    </a>
+
+    <a class="card" href="spanish2.html">
+      <div class="card-top">
+        <span class="level intermediate">Intermediate</span>
+        <span class="arrow">&rarr;</span>
+      </div>
+      <h2>Spanish 2 Endless Drill</h2>
+      <p>Preterite &amp; imperfect tenses, reflexive verbs, object pronouns, ser vs. estar, comparatives, tú commands, and por/para.</p>
+      <div class="status ready">Ready</div>
+    </a>
+
+    <a class="card" href="spanish3.html">
+      <div class="card-top">
+        <span class="level advanced">Advanced</span>
+        <span class="arrow">&rarr;</span>
+      </div>
+      <h2>Spanish 3 Endless Drill</h2>
+      <p>Future &amp; conditional tense, present subjunctive, present &amp; past perfect, formal commands, double object pronouns, relative pronouns, si-clauses, and passive/impersonal se.</p>
+      <div class="status ready">Ready</div>
+    </a>
+
+    <a class="card disabled" href="insert-cultural-phrases-index-here.html">
+      <div class="card-top">
+        <span class="level culture">Culture</span>
+        <span class="arrow">&rarr;</span>
+      </div>
+      <h2>Cultural Phrases</h2>
+      <p>Idioms, sayings, and phrases from across the Spanish-speaking world, with context on where and how they're used.</p>
+      <div class="status wip">In progress</div>
+    </a>
+
+  </div>
+
+  <footer>
+    Replace each <code>insert-...-index-here.html</code> href with the actual filename once it's pushed to your GitHub repo (e.g. <code>spanish1/index.html</code>).
+  </footer>
+</div>
+</body>
+</html>
