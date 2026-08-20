@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spanish 2 Endless Drill</title>
+<style>
+  :root{
+    --bg:#1a1025;
+    --panel:#241833;
+    --panel2:#2c1f40;
+    --border:#40305a;
+    --text:#f5ecf8;
+    --muted:#b49bc7;
+    --accent:#ff6b6b;
+    --accent2:#ffc857;
+    --warn:#ffb454;
+    --danger:#ff6b81;
+    --good:#4fd6a8;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:radial-gradient(1200px 800px at 20% -10%, #351e4d 0%, var(--bg) 55%) fixed;
+    color:var(--text);
+    font-family:"Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:28px 16px 60px;
+  }
+  .wrap{ width:100%; max-width:820px; }
+  header{ text-align:center; margin-bottom:18px; }
+  header h1{
+    margin:0 0 4px;
+    font-size:1.7rem;
+    letter-spacing:0.2px;
+    background:linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  header p{ margin:0; color:var(--muted); font-size:0.92rem; }
+
+  .statsbar{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    justify-content:center;
+    margin:18px 0 16px;
+  }
+  .stat{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:8px 14px;
+    min-width:88px;
+    text-align:center;
+  }
+  .stat .num{ font-size:1.15rem; font-weight:700; color:var(--accent); }
+  .stat .lbl{ font-size:0.68rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; margin-top:2px;}
+
+  details.filters{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:10px 16px;
+    margin-bottom:18px;
+  }
+  details.filters summary{
+    cursor:pointer;
+    color:var(--muted);
+    font-size:0.85rem;
+    outline:none;
+  }
+  .filter-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(150px,1fr));
+    gap:8px 16px;
+    margin-top:12px;
+  }
+  .filter-grid label{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:0.88rem;
+    color:var(--text);
+    cursor:pointer;
+  }
+  .filter-grid input{ accent-color: var(--accent); width:16px; height:16px; }
+
+  .card{
+    background:linear-gradient(180deg, var(--panel2), var(--panel));
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:26px 24px 22px;
+    box-shadow:0 12px 30px -14px rgba(0,0,0,0.6);
+  }
+  .card-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:14px;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .badge{
+    display:inline-block;
+    background:rgba(255,107,107,0.15);
+    color:var(--accent);
+    border:1px solid rgba(255,107,107,0.35);
+    padding:3px 10px;
+    border-radius:999px;
+    font-size:0.72rem;
+    font-weight:600;
+    letter-spacing:0.03em;
+  }
+  .timer{
+    font-variant-numeric:tabular-nums;
+    color:var(--muted);
+    font-size:0.85rem;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:999px;
+    padding:3px 10px;
+  }
+  .timer.running{ color:var(--accent2); }
+
+  .problem{
+    font-size:1.28rem;
+    line-height:1.65;
+    padding:14px 4px 6px;
+    min-height:70px;
+  }
+  .problem .es{ color:var(--accent2); font-weight:700; }
+  .problem small{ display:block; margin-top:6px; font-size:0.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; }
+
+  .hint-area{ margin-top:10px; }
+  .hint-box{
+    background:rgba(255,180,84,0.08);
+    border:1px solid rgba(255,180,84,0.3);
+    border-radius:10px;
+    padding:10px 14px;
+    margin-bottom:8px;
+    font-size:0.92rem;
+    color:#ffd9a0;
+    animation:fadeIn 0.25s ease;
+  }
+  .hint-box .hnum{ font-weight:700; margin-right:6px; color:var(--warn); }
+  .answer-box{
+    background:rgba(79,214,168,0.09);
+    border:1px solid rgba(79,214,168,0.35);
+    border-radius:10px;
+    padding:12px 14px;
+    margin-top:8px;
+    font-size:1.02rem;
+    color:#bdf3dd;
+    animation:fadeIn 0.25s ease;
+  }
+  .answer-box .albl{ font-weight:700; color:var(--good); margin-right:6px; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(-3px);} to{opacity:1; transform:translateY(0);} }
+
+  .controls{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:20px;
+  }
+  button{
+    font-family:inherit;
+    font-size:0.9rem;
+    font-weight:600;
+    padding:10px 16px;
+    border-radius:10px;
+    border:1px solid var(--border);
+    background:var(--panel);
+    color:var(--text);
+    cursor:pointer;
+    transition:transform 0.08s ease, background 0.15s ease, border-color 0.15s ease;
+  }
+  button:hover{ transform:translateY(-1px); border-color:var(--accent); }
+  button:active{ transform:translateY(0); }
+  button:disabled{ opacity:0.4; cursor:not-allowed; transform:none; }
+  button.primary{ background:var(--accent); border-color:var(--accent); color:#1a1025; }
+  button.primary:hover{ background:#ff8a8a; }
+  button.ghost{ background:transparent; }
+  .assess{ display:flex; gap:10px; margin-top:14px; }
+  button.right{ background:rgba(79,214,168,0.15); border-color:var(--good); color:var(--good); }
+  button.right:hover{ background:rgba(79,214,168,0.28); }
+  button.wrong{ background:rgba(255,107,129,0.15); border-color:var(--danger); color:var(--danger); }
+  button.wrong:hover{ background:rgba(255,107,129,0.28); }
+
+  footer{ margin-top:22px; text-align:center; color:var(--muted); font-size:0.78rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Spanish 2 Endless Drill</h1>
+    <p>An unlimited stream of intermediate Spanish problems — past tenses, reflexive verbs, object pronouns, ser vs. estar, comparatives, commands, and por/para — with progressive hints. Built for speed practice, flashcard-style.</p>
+  </header>
+
+  <div class="statsbar">
+    <div class="stat"><div class="num" id="statSeen">0</div><div class="lbl">Seen</div></div>
+    <div class="stat"><div class="num" id="statCorrect">0</div><div class="lbl">Correct</div></div>
+    <div class="stat"><div class="num" id="statStreak">0</div><div class="lbl">Streak</div></div>
+    <div class="stat"><div class="num" id="statBest">0</div><div class="lbl">Best streak</div></div>
+    <div class="stat"><div class="num" id="statAvg">–</div><div class="lbl">Avg time</div></div>
+  </div>
+
+  <details class="filters" open>
+    <summary>Topics included (uncheck any you want to skip)</summary>
+    <div class="filter-grid" id="filterGrid"></div>
+  </details>
+
+  <div class="card">
+    <div class="card-top">
+      <span class="badge" id="catBadge">Loading…</span>
+      <span class="timer" id="timerDisplay">0:00</span>
+    </div>
+    <div class="problem" id="problemText">Getting your first problem ready…</div>
+
+    <div class="hint-area" id="hintArea"></div>
+
+    <div class="controls">
+      <button class="primary" id="hintBtn">Show Hint (1/3)</button>
+      <button id="answerBtn">Show Answer</button>
+      <button class="ghost" id="skipBtn">Skip / New Problem</button>
+    </div>
+
+    <div class="assess" id="assessArea" style="display:none;">
+      <button class="right" id="rightBtn">✓ I got it right</button>
+      <button class="wrong" id="wrongBtn">✗ I missed it</button>
+    </div>
+  </div>
+
+  <footer>Stats reset when you reload the page — it's all in-memory, just for this session's practice run.</footer>
+</div>
+
+<script>
+/* ============================ helpers ============================ */
+function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function randChoice(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function sampleWithout(arr, exclude, n) {
+  const pool = arr.filter(x => x !== exclude);
+  const out = [];
+  while (out.length < n && pool.length) {
+    const idx = Math.floor(Math.random() * pool.length);
+    out.push(pool.splice(idx, 1)[0]);
+  }
+  return out;
+}
+
+/* ============================ VOCAB DATA ============================ */
+const weather = [
+  ["el clima","weather"], ["hace calor","it's hot"], ["hace frío","it's cold"], ["hace sol","it's sunny"],
+  ["hace viento","it's windy"], ["está lloviendo","it's raining"], ["está nevando","it's snowing"],
+  ["está nublado","it's cloudy"], ["la primavera","spring"], ["el verano","summer"],
+  ["el otoño","fall"], ["el invierno","winter"], ["el paraguas","umbrella"], ["la temperatura","temperature"]
+];
+const travel = [
+  ["el aeropuerto","airport"], ["el avión","airplane"], ["el boleto","ticket"], ["la maleta","suitcase"],
+  ["el pasaporte","passport"], ["el hotel","hotel"], ["la playa","beach"], ["las vacaciones","vacation"],
+  ["el tren","train"], ["el autobús","bus"], ["el mapa","map"], ["la reservación","reservation"],
+  ["el equipaje","luggage"], ["viajar","to travel"]
+];
+const technology = [
+  ["la computadora","computer"], ["el teléfono","phone"], ["el celular","cell phone"], ["el internet","internet"],
+  ["la contraseña","password"], ["el correo electrónico","email"], ["la pantalla","screen"], ["descargar","to download"],
+  ["la aplicación","app"], ["la red social","social network"], ["el archivo","file"], ["imprimir","to print"]
+];
+const emotions = [
+  ["feliz","happy"], ["triste","sad"], ["enojado","angry"], ["cansado","tired"], ["nervioso","nervous"],
+  ["emocionado","excited"], ["preocupado","worried"], ["sorprendido","surprised"], ["asustado","scared"],
+  ["aburrido","bored"], ["orgulloso","proud"], ["celoso","jealous"]
+];
+const sports = [
+  ["el fútbol","soccer"], ["el baloncesto","basketball"], ["el béisbol","baseball"], ["nadar","to swim"],
+  ["correr","to run"], ["jugar","to play"], ["el equipo","team"], ["ganar","to win"],
+  ["perder","to lose"], ["el partido","game/match"], ["el gimnasio","gym"], ["entrenar","to train"]
+];
+
+/* subject pronouns, reused across verb-tense drills */
+const pronouns = [
+  ["yo","I"], ["tú","you (informal)"], ["él/ella","he/she"], ["nosotros","we"], ["ellos/ellas","they"]
+];
+
+/* ============================ VOCABULARY GENERATOR ============================ */
+function genVocabDrill(bank, categoryLabel) {
+  const [word, meaning] = randChoice(bank);
+  const toSpanish = Math.random() < 0.5;
+  const prompt = toSpanish ? meaning : word;
+  const answer = toSpanish ? word : meaning;
+  const otherWords = sampleWithout(bank.map(b => b[0]), word, 3);
+  return {
+    category: `Vocabulary &middot; ${categoryLabel}`,
+    prompt: toSpanish
+      ? `Translate to Spanish:<br><span class="es">"${prompt}"</span>`
+      : `Translate to English:<br><span class="es">"${prompt}"</span>`,
+    hints: toSpanish
+      ? [
+          `This word is in the "${categoryLabel}" group you're studying — picture it before guessing.`,
+          `It starts with the letter "${word[0]}" and has ${word.length} letters.`,
+          `A couple of near neighbors in this set: ${otherWords.slice(0,2).join(", ")} — but not those. It's "${word}".`
+        ]
+      : [
+          `This is a ${categoryLabel.toLowerCase()} word — think about what it looks/sounds like in English.`,
+          `It starts with "${meaning[0]}".`,
+          `Full word: it means "${meaning}".`
+        ],
+    answer: `${answer}`
+  };
+}
+
+/* ============================ PRETERITE TENSE ============================ */
+const regularPreteriteVerbs = [
+  { inf:"hablar", en:"to speak", endings:["é","aste","ó","amos","aron"] },
+  { inf:"comer",  en:"to eat",   endings:["í","iste","ió","imos","ieron"] },
+  { inf:"vivir",  en:"to live",  endings:["í","iste","ió","imos","ieron"] },
+  { inf:"estudiar", en:"to study", endings:["é","aste","ó","amos","aron"] },
+  { inf:"escribir", en:"to write", endings:["í","iste","ió","imos","ieron"] },
+  { inf:"correr", en:"to run",   endings:["í","iste","ió","imos","ieron"] }
+];
+function genPreteriteRegular() {
+  const verb = randChoice(regularPreteriteVerbs);
+  const stem = verb.inf.slice(0, -2);
+  const familyLetter = verb.inf.slice(-2, -1);
+  const pIdx = randInt(0, 4);
+  const [pronoun, pronounEn] = pronouns[pIdx];
+  const answer = stem + verb.endings[pIdx];
+  return {
+    category: `Preterite &middot; ${verb.inf} (regular -${familyLetter}r)`,
+    prompt: `Conjugate <span class="es">"${verb.inf}"</span> <small>(${verb.en})</small> in the PRETERITE for:<br><span class="es">"${pronoun}" (${pronounEn})</span>`,
+    hints: [
+      `"${verb.inf}" is regular in the preterite — drop the "-${familyLetter}r" and add the preterite ending that matches the subject.`,
+      `The stem is "${stem}-". For "${pronoun}", the preterite ending you need is "-${verb.endings[pIdx]}".`,
+      `Putting it together: "${stem}" + "${verb.endings[pIdx]}" = "${answer}". Note: -ar preterite yo/él forms carry an accent (é, ó); -er/-ir verbs use the same set of endings.`
+    ],
+    answer
+  };
+}
+
+const preteriteIrregular = {
+  ir:     { en:"to go",              forms:["fui","fuiste","fue","fuimos","fueron"] },
+  ser:    { en:"to be",              forms:["fui","fuiste","fue","fuimos","fueron"] },
+  hacer:  { en:"to do/make",         forms:["hice","hiciste","hizo","hicimos","hicieron"] },
+  tener:  { en:"to have",            forms:["tuve","tuviste","tuvo","tuvimos","tuvieron"] },
+  estar:  { en:"to be (loc./state)", forms:["estuve","estuviste","estuvo","estuvimos","estuvieron"] },
+  decir:  { en:"to say/tell",        forms:["dije","dijiste","dijo","dijimos","dijeron"] },
+  poder:  { en:"to be able to",      forms:["pude","pudiste","pudo","pudimos","pudieron"] },
+  poner:  { en:"to put",             forms:["puse","pusiste","puso","pusimos","pusieron"] }
+};
+function genPreteriteIrregular() {
+  const keys = Object.keys(preteriteIrregular);
+  const verb = randChoice(keys);
+  const data = preteriteIrregular[verb];
+  const pIdx = randInt(0, 4);
+  const [pronoun, pronounEn] = pronouns[pIdx];
+  const answer = data.forms[pIdx];
+  return {
+    category: `Preterite &middot; ${verb} (irregular)`,
+    prompt: `Conjugate <span class="es">"${verb}"</span> <small>(${data.en})</small> in the PRETERITE for:<br><span class="es">"${pronoun}" (${pronounEn})</span>`,
+    hints: [
+      `"${verb}" has an irregular stem in the preterite — it doesn't follow the regular pattern, so these forms have to be memorized.`,
+      `The full preterite set is: ${pronouns.map((p,i)=>`${p[0]} → ${data.forms[i]}`).join(", ")}.${verb === "ir" || verb === "ser" ? " (ir and ser share identical preterite forms — context tells you which one is meant.)" : ""}`,
+      `For "${pronoun}", the correct form is "${answer}".`
+    ],
+    answer
+  };
+}
+
+/* ============================ IMPERFECT TENSE ============================ */
+const imperfectRegularVerbs = [
+  { inf:"hablar", en:"to speak", type:"ar" },
+  { inf:"comer",  en:"to eat",   type:"er" },
+  { inf:"vivir",  en:"to live",  type:"ir" },
+  { inf:"jugar",  en:"to play",  type:"ar" },
+  { inf:"escribir", en:"to write", type:"ir" },
+  { inf:"correr", en:"to run",   type:"er" }
+];
+const imperfectEndings = {
+  ar:   ["aba","abas","aba","ábamos","aban"],
+  erir: ["ía","ías","ía","íamos","ían"]
+};
+function genImperfectRegular() {
+  const verb = randChoice(imperfectRegularVerbs);
+  const stem = verb.inf.slice(0, -2);
+  const endings = verb.type === "ar" ? imperfectEndings.ar : imperfectEndings.erir;
+  const pIdx = randInt(0, 4);
+  const [pronoun, pronounEn] = pronouns[pIdx];
+  const answer = stem + endings[pIdx];
+  return {
+    category: `Imperfect &middot; ${verb.inf} (regular -${verb.type}r)`,
+    prompt: `Conjugate <span class="es">"${verb.inf}"</span> <small>(${verb.en})</small> in the IMPERFECT for:<br><span class="es">"${pronoun}" (${pronounEn})</span>`,
+    hints: [
+      `"${verb.inf}" is regular in the imperfect — drop the "-${verb.type}r" and add the imperfect ending for this subject.`,
+      verb.type === "ar"
+        ? "-ar verbs use: -aba, -abas, -aba, -ábamos, -aban."
+        : "-er/-ir verbs share the same imperfect endings: -ía, -ías, -ía, -íamos, -ían.",
+      `Putting it together: "${stem}" + "${endings[pIdx]}" = "${answer}".`
+    ],
+    answer
+  };
+}
+
+const imperfectIrregular = {
+  ser: { en:"to be",  forms:["era","eras","era","éramos","eran"] },
+  ir:  { en:"to go",  forms:["iba","ibas","iba","íbamos","iban"] },
+  ver: { en:"to see", forms:["veía","veías","veía","veíamos","veían"] }
+};
+function genImperfectIrregular() {
+  const keys = Object.keys(imperfectIrregular);
+  const verb = randChoice(keys);
+  const data = imperfectIrregular[verb];
+  const pIdx = randInt(0, 4);
+  const [pronoun, pronounEn] = pronouns[pIdx];
+  const answer = data.forms[pIdx];
+  return {
+    category: `Imperfect &middot; ${verb} (irregular)`,
+    prompt: `Conjugate <span class="es">"${verb}"</span> <small>(${data.en})</small> in the IMPERFECT for:<br><span class="es">"${pronoun}" (${pronounEn})</span>`,
+    hints: [
+      `Only three verbs are irregular in the imperfect: ser, ir, and ver. "${verb}" is one of them — its forms must be memorized.`,
+      `The full imperfect set is: ${pronouns.map((p,i)=>`${p[0]} → ${data.forms[i]}`).join(", ")}.`,
+      `For "${pronoun}", the correct form is "${answer}".`
+    ],
+    answer
+  };
+}
+
+/* ============================ REFLEXIVE VERBS ============================ */
+const reflexiveVerbs = [
+  { inf:"levantarse",  en:"to get up",           stem:"levant" },
+  { inf:"bañarse",     en:"to take a bath",      stem:"bañ" },
+  { inf:"ducharse",    en:"to take a shower",    stem:"duch" },
+  { inf:"lavarse",     en:"to wash oneself",     stem:"lav" },
+  { inf:"peinarse",    en:"to comb one's hair",  stem:"pein" },
+  { inf:"maquillarse", en:"to put on makeup",    stem:"maquill" },
+  { inf:"cepillarse",  en:"to brush (hair/teeth)", stem:"cepill" },
+  { inf:"relajarse",   en:"to relax",            stem:"relaj" }
+];
+const reflexivePronouns = ["me","te","se","nos","se"];
+const presentArEndings = ["o","as","a","amos","an"];
+function genReflexive() {
+  const verb = randChoice(reflexiveVerbs);
+  const pIdx = randInt(0, 4);
+  const [pronoun, pronounEn] = pronouns[pIdx];
+  const answer = `${reflexivePronouns[pIdx]} ${verb.stem}${presentArEndings[pIdx]}`;
+  return {
+    category: `Reflexive Verbs &middot; ${verb.inf}`,
+    prompt: `Conjugate the reflexive verb <span class="es">"${verb.inf}"</span> <small>(${verb.en})</small> for:<br><span class="es">"${pronoun}" (${pronounEn})</span>`,
+    hints: [
+      "Reflexive verbs need TWO pieces: the reflexive pronoun (me/te/se/nos/se) matching the subject, plus the conjugated verb.",
+      `The reflexive pronoun for "${pronoun}" is "${reflexivePronouns[pIdx]}". The verb stem is "${verb.stem}-", conjugated regularly like an -ar verb.`,
+      `Putting it together: "${answer}".`
+    ],
+    answer
+  };
+}
+
+/* ============================ OBJECT PRONOUNS ============================ */
+const directObjectItems = [
+  { subject:"Yo", verb:"compro", verbEn:"buy", noun:"el libro", nounEn:"the book", pronoun:"lo" },
+  { subject:"Ella", verb:"lee", verbEn:"reads", noun:"la revista", nounEn:"the magazine", pronoun:"la" },
+  { subject:"Nosotros", verb:"vemos", verbEn:"see", noun:"los perros", nounEn:"the dogs", pronoun:"los" },
+  { subject:"Tú", verb:"tienes", verbEn:"have", noun:"las llaves", nounEn:"the keys", pronoun:"las" },
+  { subject:"Ellos", verb:"comen", verbEn:"eat", noun:"la manzana", nounEn:"the apple", pronoun:"la" },
+  { subject:"Yo", verb:"escribo", verbEn:"write", noun:"el mensaje", nounEn:"the message", pronoun:"lo" },
+  { subject:"Él", verb:"busca", verbEn:"looks for", noun:"las fotos", nounEn:"the photos", pronoun:"las" },
+  { subject:"Nosotros", verb:"necesitamos", verbEn:"need", noun:"el dinero", nounEn:"the money", pronoun:"lo" }
+];
+function genDirectObject() {
+  const item = randChoice(directObjectItems);
+  return {
+    category: "Grammar &middot; Direct Object Pronouns",
+    prompt: `Rewrite the sentence using a direct object pronoun:<br><span class="es">"${item.subject} ${item.verb} ${item.noun}."</span> <small>(${item.subject} ${item.verbEn} ${item.nounEn}.)</small>`,
+    hints: [
+      `"${item.noun}" is the direct object — the thing receiving the action of the verb.`,
+      `Direct object pronouns (lo/la/los/las) must match the gender and number of the noun they replace. Here that's "${item.pronoun}".`,
+      `Direct object pronouns go directly before the conjugated verb: "${item.subject} ${item.pronoun} ${item.verb}."`
+    ],
+    answer: `${item.subject} ${item.pronoun} ${item.verb}.`
+  };
+}
+
+const indirectObjectItems = [
+  { subject:"Yo", target:"a mi madre", targetEn:"to my mother", pronoun:"le", verb:"doy un regalo", verbEn:"give a gift" },
+  { subject:"Tú", target:"a mí", targetEn:"to me", pronoun:"me", verb:"escribes una carta", verbEn:"write a letter" },
+  { subject:"Nosotros", target:"a ti", targetEn:"to you", pronoun:"te", verb:"mandamos un mensaje", verbEn:"send a message" },
+  { subject:"Ella", target:"a nosotros", targetEn:"to us", pronoun:"nos", verb:"explica la lección", verbEn:"explains the lesson" },
+  { subject:"Ellos", target:"a mis padres", targetEn:"to my parents", pronoun:"les", verb:"compran un regalo", verbEn:"buy a gift" },
+  { subject:"Yo", target:"a los estudiantes", targetEn:"to the students", pronoun:"les", verb:"muestro el libro", verbEn:"show the book" }
+];
+function genIndirectObject() {
+  const item = randChoice(indirectObjectItems);
+  return {
+    category: "Grammar &middot; Indirect Object Pronouns",
+    prompt: `Fill in the correct indirect object pronoun:<br><span class="es">"${item.subject} ___ ${item.verb} ${item.target}."</span> <small>(${item.subject} ${item.verbEn} ${item.targetEn}.)</small>`,
+    hints: [
+      "Indirect object pronouns (me/te/le/nos/les) tell you TO or FOR WHOM the action happens.",
+      `The phrase "${item.target}" tells you who receives the action — that's what determines the pronoun.`,
+      `The correct pronoun is "${item.pronoun}".`
+    ],
+    answer: item.pronoun
+  };
+}
+
+/* ============================ SER vs. ESTAR ============================ */
+const serEstarItems = [
+  { sentence:"___ (yo) estudiante.", answer:"Soy", why:"a permanent identity/profession" },
+  { sentence:"___ (ella) muy cansada hoy.", answer:"Está", why:"a temporary condition" },
+  { sentence:"___ (nosotros) de México.", answer:"Somos", why:"origin" },
+  { sentence:"La fiesta ___ en mi casa.", answer:"es", why:"where an EVENT takes place" },
+  { sentence:"El café ___ caliente.", answer:"está", why:"a temporary state" },
+  { sentence:"___ (tú) muy inteligente.", answer:"Eres", why:"an inherent trait" },
+  { sentence:"Ellos ___ en la biblioteca ahora.", answer:"están", why:"the physical location of people" },
+  { sentence:"Hoy ___ lunes.", answer:"es", why:"a day/date" },
+  { sentence:"La puerta ___ abierta.", answer:"está", why:"a resulting condition/state" }
+];
+function genSerEstar() {
+  const item = randChoice(serEstarItems);
+  return {
+    category: "Grammar &middot; Ser vs. Estar",
+    prompt: `Choose the correct form of ser or estar to complete the sentence:<br><span class="es">"${item.sentence}"</span>`,
+    hints: [
+      "SER is for identity, characteristics, origin, profession, time/dates, and where an EVENT takes place. ESTAR is for location, temporary states/conditions, and feelings.",
+      `This sentence is about: ${item.why}.`,
+      `The correct answer is "${item.answer}".`
+    ],
+    answer: item.answer
+  };
+}
+
+/* ============================ COMPARATIVES ============================ */
+const comparativeItems = [
+  { a:"El elefante", b:"el ratón", adjEs:"grande", type:"more", enSentence:"The elephant is bigger than the mouse." },
+  { a:"La tortuga", b:"el conejo", adjEs:"lenta", type:"more", enSentence:"The turtle is slower than the rabbit." },
+  { a:"Mi hermano", b:"yo", adjEs:"alto", type:"equal", enSentence:"My brother is as tall as me." },
+  { a:"Esta clase", b:"esa clase", adjEs:"difícil", type:"more", enSentence:"This class is more difficult than that class." },
+  { a:"El libro", b:"la película", adjEs:"interesante", type:"equal", enSentence:"The book is as interesting as the movie." },
+  { a:"Mi casa", b:"tu casa", adjEs:"moderna", type:"less", enSentence:"My house is less modern than your house." },
+  { a:"Este examen", b:"el otro examen", adjEs:"complicado", type:"more", enSentence:"This exam is more complicated than the other exam." }
+];
+function genComparative() {
+  const item = randChoice(comparativeItems);
+  let answer;
+  if (item.type === "more") {
+    answer = `${item.a} es más ${item.adjEs} que ${item.b}.`;
+  } else if (item.type === "less") {
+    answer = `${item.a} es menos ${item.adjEs} que ${item.b}.`;
+  } else {
+    answer = `${item.a} es tan ${item.adjEs} como ${item.b}.`;
+  }
+  return {
+    category: "Grammar &middot; Comparatives",
+    prompt: `How would you say this in Spanish?<br><span class="es">"${item.enSentence}"</span>`,
+    hints: [
+      item.type === "equal"
+        ? "For equal comparisons with adjectives, use the pattern: tan + adjective + como."
+        : `For unequal comparisons, use the pattern: ${item.type === "more" ? "más" : "menos"} + adjective + que.`,
+      `The adjective here is "${item.adjEs}" — it goes between the comparison words, right after "es".`,
+      `Full answer: "${answer}"`
+    ],
+    answer
+  };
+}
+
+/* ============================ COMMANDS (tú) ============================ */
+const commandVerbsRegular = [
+  { inf:"hablar", en:"to speak", affirmative:"habla", negative:"no hables" },
+  { inf:"comer", en:"to eat", affirmative:"come", negative:"no comas" },
+  { inf:"escribir", en:"to write", affirmative:"escribe", negative:"no escribas" },
+  { inf:"estudiar", en:"to study", affirmative:"estudia", negative:"no estudies" },
+  { inf:"correr", en:"to run", affirmative:"corre", negative:"no corras" },
+  { inf:"abrir", en:"to open", affirmative:"abre", negative:"no abras" }
+];
+const commandVerbsIrregular = {
+  ir:    { en:"to go",     affirmative:"ve",  negative:"no vayas" },
+  ser:   { en:"to be",     affirmative:"sé",  negative:"no seas" },
+  hacer: { en:"to do/make", affirmative:"haz", negative:"no hagas" },
+  tener: { en:"to have",   affirmative:"ten", negative:"no tengas" },
+  poner: { en:"to put",    affirmative:"pon", negative:"no pongas" },
+  salir: { en:"to leave",  affirmative:"sal", negative:"no salgas" },
+  venir: { en:"to come",   affirmative:"ven", negative:"no vengas" },
+  decir: { en:"to say/tell", affirmative:"di", negative:"no digas" }
+};
+function genCommand() {
+  const useIrregular = Math.random() < 0.4;
+  const isNegative = Math.random() < 0.5;
+  if (useIrregular) {
+    const keys = Object.keys(commandVerbsIrregular);
+    const verb = randChoice(keys);
+    const data = commandVerbsIrregular[verb];
+    const answer = isNegative ? data.negative : data.affirmative;
+    return {
+      category: "Commands &middot; tú (irregular)",
+      prompt: `Give the ${isNegative ? 'NEGATIVE' : 'AFFIRMATIVE'} tú command for:<br><span class="es">"${verb}"</span> <small>(${data.en})</small>`,
+      hints: [
+        isNegative
+          ? "Negative tú commands use the present subjunctive form, even for irregular verbs."
+          : "This verb has an irregular AFFIRMATIVE tú command that must be memorized (it doesn't follow the él/ella present-tense shortcut).",
+        "The 8 irregular affirmative tú commands are: di (decir), haz (hacer), ve (ir), pon (poner), sal (salir), sé (ser), ten (tener), ven (venir).",
+        `The correct form is "${answer}".`
+      ],
+      answer
+    };
+  }
+  const verb = randChoice(commandVerbsRegular);
+  const answer = isNegative ? verb.negative : verb.affirmative;
+  return {
+    category: "Commands &middot; tú (regular)",
+    prompt: `Give the ${isNegative ? 'NEGATIVE' : 'AFFIRMATIVE'} tú command for:<br><span class="es">"${verb.inf}"</span> <small>(${verb.en})</small>`,
+    hints: [
+      isNegative
+        ? "Negative tú commands use the present subjunctive 'yo' stem with the OPPOSITE vowel: -ar verbs take -es, -er/-ir verbs take -as."
+        : "Affirmative tú commands (regular verbs) use the same form as the él/ella present tense.",
+      isNegative
+        ? `For "${verb.inf}", that gives "${verb.negative}".`
+        : `For "${verb.inf}", that form is "${verb.affirmative}".`,
+      `The correct answer is "${answer}".`
+    ],
+    answer
+  };
+}
+
+/* ============================ POR vs. PARA ============================ */
+const porParaItems = [
+  { sentence:"Caminamos ___ el parque.", answer:"por", why:"movement through/along a place" },
+  { sentence:"Este regalo es ___ ti.", answer:"para", why:"the recipient of something" },
+  { sentence:"Trabajo ___ ocho horas al día.", answer:"por", why:"duration of time" },
+  { sentence:"Necesito el proyecto ___ el lunes.", answer:"para", why:"a deadline" },
+  { sentence:"Gracias ___ tu ayuda.", answer:"por", why:"reason/cause ('thanks for...')" },
+  { sentence:"Salimos ___ Madrid mañana.", answer:"para", why:"a destination" },
+  { sentence:"Compré el libro ___ veinte dólares.", answer:"por", why:"an exchange/price" },
+  { sentence:"Estudio ___ ser doctor.", answer:"para", why:"purpose/goal ('in order to')" }
+];
+function genPorPara() {
+  const item = randChoice(porParaItems);
+  return {
+    category: "Grammar &middot; Por vs. Para",
+    prompt: `Fill in the blank with "por" or "para":<br><span class="es">"${item.sentence}"</span>`,
+    hints: [
+      "POR generally covers: movement through/along, duration, exchange/price, and reason/cause. PARA covers: recipient, deadline, destination, and purpose/goal.",
+      `This sentence is about: ${item.why}.`,
+      `The correct answer is "${item.answer}".`
+    ],
+    answer: item.answer
+  };
+}
+
+/* ============================ topics / registry ============================ */
+const TOPICS = {
+  weather:      { label: "Vocabulary: Weather & Seasons",   gens: [() => genVocabDrill(weather, "Weather & Seasons")] },
+  travel:       { label: "Vocabulary: Travel",               gens: [() => genVocabDrill(travel, "Travel & Transportation")] },
+  technology:   { label: "Vocabulary: Technology",            gens: [() => genVocabDrill(technology, "Technology")] },
+  emotions:     { label: "Vocabulary: Emotions",              gens: [() => genVocabDrill(emotions, "Emotions & Feelings")] },
+  sports:       { label: "Vocabulary: Sports & Hobbies",      gens: [() => genVocabDrill(sports, "Sports & Hobbies")] },
+  preterite:    { label: "Preterite Tense",                   gens: [genPreteriteRegular, genPreteriteIrregular] },
+  imperfect:    { label: "Imperfect Tense",                   gens: [genImperfectRegular, genImperfectIrregular] },
+  reflexive:    { label: "Reflexive Verbs",                   gens: [genReflexive] },
+  objpronouns:  { label: "Object Pronouns (Direct & Indirect)", gens: [genDirectObject, genIndirectObject] },
+  serestar:     { label: "Ser vs. Estar",                     gens: [genSerEstar] },
+  comparatives: { label: "Comparatives",                      gens: [genComparative] },
+  commands:     { label: "Commands (tú)",                     gens: [genCommand] },
+  porpara:      { label: "Por vs. Para",                      gens: [genPorPara] }
+};
+
+/* ============================ app state ============================ */
+let current = null;
+let hintsShown = 0;
+let answerShown = false;
+let timerStart = null;
+let timerInterval = null;
+let stats = { seen: 0, correct: 0, streak: 0, best: 0, totalTime: 0, timedCount: 0 };
+
+const filterGrid = document.getElementById('filterGrid');
+Object.entries(TOPICS).forEach(([key, t]) => {
+  const label = document.createElement('label');
+  label.innerHTML = `<input type="checkbox" checked data-topic="${key}"> ${t.label}`;
+  filterGrid.appendChild(label);
+});
+
+function activeGenerators() {
+  const checked = [...filterGrid.querySelectorAll('input[type=checkbox]:checked')].map(cb => cb.dataset.topic);
+  let pool = [];
+  checked.forEach(key => { pool = pool.concat(TOPICS[key].gens); });
+  if (pool.length === 0) {
+    Object.values(TOPICS).forEach(t => pool = pool.concat(t.gens));
+  }
+  return pool;
+}
+
+function fmtTime(sec) {
+  const m = Math.floor(sec / 60), s = Math.floor(sec % 60);
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+function updateStatsUI() {
+  document.getElementById('statSeen').textContent = stats.seen;
+  document.getElementById('statCorrect').textContent = stats.correct;
+  document.getElementById('statStreak').textContent = stats.streak;
+  document.getElementById('statBest').textContent = stats.best;
+  document.getElementById('statAvg').textContent = stats.timedCount ? fmtTime(stats.totalTime / stats.timedCount) : '–';
+}
+
+function startTimer() {
+  timerStart = Date.now();
+  const el = document.getElementById('timerDisplay');
+  el.classList.add('running');
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    el.textContent = fmtTime((Date.now() - timerStart) / 1000);
+  }, 250);
+}
+function stopTimer() {
+  clearInterval(timerInterval);
+  document.getElementById('timerDisplay').classList.remove('running');
+  return timerStart ? (Date.now() - timerStart) / 1000 : 0;
+}
+
+function newProblem() {
+  const pool = activeGenerators();
+  const gen = randChoice(pool);
+  current = gen();
+  hintsShown = 0;
+  answerShown = false;
+
+  document.getElementById('catBadge').textContent = current.category.replace(/&middot;/g, '·');
+  document.getElementById('problemText').innerHTML = current.prompt;
+  document.getElementById('hintArea').innerHTML = '';
+  document.getElementById('assessArea').style.display = 'none';
+
+  const hintBtn = document.getElementById('hintBtn');
+  hintBtn.disabled = false;
+  hintBtn.textContent = 'Show Hint (1/3)';
+  document.getElementById('answerBtn').disabled = false;
+  document.getElementById('answerBtn').textContent = 'Show Answer';
+
+  startTimer();
+}
+
+function showNextHint() {
+  if (!current || hintsShown >= current.hints.length) return;
+  const box = document.createElement('div');
+  box.className = 'hint-box';
+  box.innerHTML = `<span class="hnum">Hint ${hintsShown + 1}:</span>${current.hints[hintsShown]}`;
+  document.getElementById('hintArea').appendChild(box);
+  hintsShown++;
+  const hintBtn = document.getElementById('hintBtn');
+  if (hintsShown >= current.hints.length) {
+    hintBtn.disabled = true;
+    hintBtn.textContent = 'No more hints';
+  } else {
+    hintBtn.textContent = `Show Hint (${hintsShown + 1}/${current.hints.length})`;
+  }
+}
+
+function revealAnswer() {
+  if (!current || answerShown) return;
+  answerShown = true;
+  const box = document.createElement('div');
+  box.className = 'answer-box';
+  box.innerHTML = `<span class="albl">Answer:</span>${current.answer}`;
+  document.getElementById('hintArea').appendChild(box);
+  document.getElementById('answerBtn').disabled = true;
+  document.getElementById('answerBtn').textContent = 'Answer shown';
+  document.getElementById('assessArea').style.display = 'flex';
+  stopTimer();
+}
+
+function markResult(correct) {
+  const elapsed = timerStart ? (Date.now() - timerStart) / 1000 : 0;
+  stats.seen++;
+  stats.totalTime += elapsed;
+  stats.timedCount++;
+  if (correct) {
+    stats.correct++;
+    stats.streak++;
+    if (stats.streak > stats.best) stats.best = stats.streak;
+  } else {
+    stats.streak = 0;
+  }
+  updateStatsUI();
+  newProblem();
+}
+
+document.getElementById('hintBtn').addEventListener('click', showNextHint);
+document.getElementById('answerBtn').addEventListener('click', revealAnswer);
+document.getElementById('skipBtn').addEventListener('click', () => { stopTimer(); newProblem(); });
+document.getElementById('rightBtn').addEventListener('click', () => markResult(true));
+document.getElementById('wrongBtn').addEventListener('click', () => markResult(false));
+filterGrid.addEventListener('change', () => { /* filters apply to the next problem automatically */ });
+
+updateStatsUI();
+newProblem();
+</script>
+</body>
+</html>
