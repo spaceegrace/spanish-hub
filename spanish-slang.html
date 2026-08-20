@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spanish Slang &amp; Dichos Drill</title>
+<style>
+  :root{
+    --bg:#1a1025;
+    --panel:#241833;
+    --panel2:#2c1f40;
+    --border:#40305a;
+    --text:#f5ecf8;
+    --muted:#b49bc7;
+    --accent:#ff6b6b;
+    --accent2:#ffc857;
+    --warn:#ffb454;
+    --danger:#ff6b81;
+    --good:#4fd6a8;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:radial-gradient(1200px 800px at 20% -10%, #351e4d 0%, var(--bg) 55%) fixed;
+    color:var(--text);
+    font-family:"Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:28px 16px 60px;
+  }
+  .wrap{ width:100%; max-width:820px; }
+  header{ text-align:center; margin-bottom:18px; }
+  header h1{
+    margin:0 0 4px;
+    font-size:1.7rem;
+    letter-spacing:0.2px;
+    background:linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  header p{ margin:0; color:var(--muted); font-size:0.92rem; }
+
+  .statsbar{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    justify-content:center;
+    margin:18px 0 16px;
+  }
+  .stat{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:8px 14px;
+    min-width:88px;
+    text-align:center;
+  }
+  .stat .num{ font-size:1.15rem; font-weight:700; color:var(--accent); }
+  .stat .lbl{ font-size:0.68rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; margin-top:2px;}
+
+  details.filters{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:10px 16px;
+    margin-bottom:18px;
+  }
+  details.filters summary{
+    cursor:pointer;
+    color:var(--muted);
+    font-size:0.85rem;
+    outline:none;
+  }
+  .filter-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(170px,1fr));
+    gap:8px 16px;
+    margin-top:12px;
+  }
+  .filter-grid label{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:0.88rem;
+    color:var(--text);
+    cursor:pointer;
+  }
+  .filter-grid input{ accent-color: var(--accent); width:16px; height:16px; }
+
+  .card{
+    background:linear-gradient(180deg, var(--panel2), var(--panel));
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:26px 24px 22px;
+    box-shadow:0 12px 30px -14px rgba(0,0,0,0.6);
+  }
+  .card-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:14px;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .badge{
+    display:inline-block;
+    background:rgba(255,107,107,0.15);
+    color:var(--accent);
+    border:1px solid rgba(255,107,107,0.35);
+    padding:3px 10px;
+    border-radius:999px;
+    font-size:0.72rem;
+    font-weight:600;
+    letter-spacing:0.03em;
+  }
+  .timer{
+    font-variant-numeric:tabular-nums;
+    color:var(--muted);
+    font-size:0.85rem;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:999px;
+    padding:3px 10px;
+  }
+  .timer.running{ color:var(--accent2); }
+
+  .problem{
+    font-size:1.26rem;
+    line-height:1.65;
+    padding:14px 4px 6px;
+    min-height:70px;
+  }
+  .problem .es{ color:var(--accent2); font-weight:700; }
+  .problem small{ display:block; margin-top:6px; font-size:0.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; }
+
+  .hint-area{ margin-top:10px; }
+  .hint-box{
+    background:rgba(255,180,84,0.08);
+    border:1px solid rgba(255,180,84,0.3);
+    border-radius:10px;
+    padding:10px 14px;
+    margin-bottom:8px;
+    font-size:0.92rem;
+    color:#ffd9a0;
+    animation:fadeIn 0.25s ease;
+  }
+  .hint-box .hnum{ font-weight:700; margin-right:6px; color:var(--warn); }
+  .answer-box{
+    background:rgba(79,214,168,0.09);
+    border:1px solid rgba(79,214,168,0.35);
+    border-radius:10px;
+    padding:12px 14px;
+    margin-top:8px;
+    font-size:1.0rem;
+    color:#bdf3dd;
+    animation:fadeIn 0.25s ease;
+  }
+  .answer-box .albl{ font-weight:700; color:var(--good); margin-right:6px; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(-3px);} to{opacity:1; transform:translateY(0);} }
+
+  .controls{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:20px;
+  }
+  button{
+    font-family:inherit;
+    font-size:0.9rem;
+    font-weight:600;
+    padding:10px 16px;
+    border-radius:10px;
+    border:1px solid var(--border);
+    background:var(--panel);
+    color:var(--text);
+    cursor:pointer;
+    transition:transform 0.08s ease, background 0.15s ease, border-color 0.15s ease;
+  }
+  button:hover{ transform:translateY(-1px); border-color:var(--accent); }
+  button:active{ transform:translateY(0); }
+  button:disabled{ opacity:0.4; cursor:not-allowed; transform:none; }
+  button.primary{ background:var(--accent); border-color:var(--accent); color:#1a1025; }
+  button.primary:hover{ background:#ff8a8a; }
+  button.ghost{ background:transparent; }
+  .assess{ display:flex; gap:10px; margin-top:14px; }
+  button.right{ background:rgba(79,214,168,0.15); border-color:var(--good); color:var(--good); }
+  button.right:hover{ background:rgba(79,214,168,0.28); }
+  button.wrong{ background:rgba(255,107,129,0.15); border-color:var(--danger); color:var(--danger); }
+  button.wrong:hover{ background:rgba(255,107,129,0.28); }
+
+  footer{ margin-top:22px; text-align:center; color:var(--muted); font-size:0.78rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Spanish Slang &amp; Dichos Drill</h1>
+    <p>An unlimited stream of casual, slang, and metaphor-style expressions (dichos) from five Spanish-speaking cultures — Cuba, the Dominican Republic, Mexico, Spain, and Colombia — with progressive hints on regional context and literal meaning. Built for speed practice, flashcard-style.</p>
+  </header>
+
+  <div class="statsbar">
+    <div class="stat"><div class="num" id="statSeen">0</div><div class="lbl">Seen</div></div>
+    <div class="stat"><div class="num" id="statCorrect">0</div><div class="lbl">Correct</div></div>
+    <div class="stat"><div class="num" id="statStreak">0</div><div class="lbl">Streak</div></div>
+    <div class="stat"><div class="num" id="statBest">0</div><div class="lbl">Best streak</div></div>
+    <div class="stat"><div class="num" id="statAvg">–</div><div class="lbl">Avg time</div></div>
+  </div>
+
+  <details class="filters" open>
+    <summary>Countries &amp; categories included (uncheck any you want to skip)</summary>
+    <div class="filter-grid" id="filterGrid"></div>
+  </details>
+
+  <div class="card">
+    <div class="card-top">
+      <span class="badge" id="catBadge">Loading…</span>
+      <span class="timer" id="timerDisplay">0:00</span>
+    </div>
+    <div class="problem" id="problemText">Getting your first problem ready…</div>
+
+    <div class="hint-area" id="hintArea"></div>
+
+    <div class="controls">
+      <button class="primary" id="hintBtn">Show Hint (1/3)</button>
+      <button id="answerBtn">Show Answer</button>
+      <button class="ghost" id="skipBtn">Skip / New Problem</button>
+    </div>
+
+    <div class="assess" id="assessArea" style="display:none;">
+      <button class="right" id="rightBtn">✓ I got it right</button>
+      <button class="wrong" id="wrongBtn">✗ I missed it</button>
+    </div>
+  </div>
+
+  <footer>Slang and dichos vary by region, generation, and context — these are common, widely-heard versions, not the only "correct" ones. Stats reset when you reload the page — it's all in-memory, just for this session's practice run.</footer>
+</div>
+
+<script>
+/* ============================ helpers ============================ */
+function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function randChoice(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+/* ============================ FLAGS ============================ */
+const FLAG = { cuba:"🇨🇺", dr:"🇩🇴", mexico:"🇲🇽", spain:"🇪🇸", colombia:"🇨🇴" };
+
+/* ============================ CUBA ============================ */
+const cubaSlang = [
+  { term:"asere", en:"dude / buddy", note:"the classic Cuban way to address a close friend, like 'bro'" },
+  { term:"qué bolá", en:"what's up / what's going on", note:"the everyday Cuban greeting among friends" },
+  { term:"yuma", en:"a foreigner (especially from the US) / the US itself", note:"'un yuma' is a foreign tourist" },
+  { term:"fula", en:"US dollar / hard currency", note:"slang for cash, especially dollars" },
+  { term:"guagua", en:"bus", note:"the everyday word for a city bus in Cuba" },
+  { term:"jamar", en:"to eat", note:"a casual, folksy way to say 'comer'" },
+  { term:"la pincha", en:"one's job / work", note:"'voy pa' la pincha' = I'm headed to work" },
+  { term:"tremendo/a", en:"huge, amazing (used as an intensifier)", note:"'tremenda fiesta' = an amazing party" },
+  { term:"resolver", en:"to get by, to make something work out", note:"captures the Cuban art of making do with what you have" },
+  { term:"bisne", en:"a hustle, a side deal", note:"borrowed from English 'business' — an informal money-making scheme" },
+  { term:"consorte", en:"close friend, pal", note:"similar to 'asere', a term for a tight friend" },
+  { term:"estar como un mango", en:"to be very attractive", note:"'ella está como un mango' = she's a total catch" },
+  { term:"fruta bomba", en:"papaya", note:"in Cuba, 'fruta bomba' is used instead of 'papaya', which carries a different slang meaning there" },
+  { term:"tirar un pon", en:"to give someone a ride", note:"like offering someone a lift in your car" }
+];
+const cubaSayings = [
+  { phrase:"estar en la pomada", en:"to be in the know, on top of what's going on", literal:"to be in the ointment" },
+  { phrase:"ponerse las botas", en:"to make a big profit, cash in", literal:"to put on the boots" },
+  { phrase:"tirar para el monte", en:"to revert to old, unrefined habits", literal:"to head for the hills/bush" },
+  { phrase:"tener guano", en:"to have money", literal:"to have dried palm thatch" },
+  { phrase:"ser de rompe y raja", en:"to be tough and decisive, no-nonsense", literal:"to be of break-and-tear" },
+  { phrase:"partirse el coco", en:"to rack one's brain over something", literal:"to split one's coconut" },
+  { phrase:"írsele el santo al cielo", en:"to completely forget something", literal:"for one's saint to go up to heaven" },
+  { phrase:"estar en talla", en:"to be up to date, in the loop", literal:"to be in size" }
+];
+
+/* ============================ DOMINICAN REPUBLIC ============================ */
+const drSlang = [
+  { term:"vaina", en:"thing / stuff (an all-purpose word)", note:"the most versatile word in Dominican Spanish — can stand in for almost anything" },
+  { term:"tíguere", en:"a streetwise, savvy person", note:"a Dominican archetype: clever, bold, and resourceful" },
+  { term:"jevi", en:"cool, awesome", note:"from English 'heavy', used to mean great or cool" },
+  { term:"jeva", en:"girlfriend / young woman", note:"casual term for a girlfriend or woman" },
+  { term:"pana", en:"close friend, buddy", note:"widely used across the Caribbean for a good friend" },
+  { term:"concho", en:"shared taxi", note:"a car that picks up several passengers along a fixed route" },
+  { term:"motoconcho", en:"motorcycle taxi", note:"a common, cheap way to get around Dominican towns" },
+  { term:"chin", en:"a little bit", note:"'dame un chin' = give me a little bit" },
+  { term:"dique", en:"supposedly, apparently", note:"used to cast doubt on something someone claimed" },
+  { term:"tato", en:"okay, all good", note:"short for 'está todo (bien)'" },
+  { term:"bacano/a", en:"cool, great", note:"shared with Colombia — high praise for something or someone" },
+  { term:"pariguayo", en:"a clueless or timid person, a wallflower", note:"someone who doesn't know how to carry themselves socially" },
+  { term:"matatán", en:"the best, top of the game", note:"'él es el matatán' = he's the best at it" },
+  { term:"guapo/a", en:"angry, upset — NOT 'handsome' like elsewhere!", note:"a classic false friend: in the DR, 'guapo' usually means mad, not good-looking" }
+];
+const drSayings = [
+  { phrase:"comer cable", en:"to be broke, going hungry", literal:"to eat cable" },
+  { phrase:"estar arrebatao/á", en:"to have wild, over-the-top energy", literal:"to be snatched/grabbed" },
+  { phrase:"dar un fresquito", en:"to gossip, to share the scoop", literal:"to give a little fresh breeze" },
+  { phrase:"ser tremendo tíguere", en:"to be a sharp, streetwise operator", literal:"to be a huge tiger" },
+  { phrase:"no ser ni chicha ni limonada", en:"to be wishy-washy, neither one thing nor the other", literal:"to be neither corn drink nor lemonade" },
+  { phrase:"írsele la mano", en:"to overdo it, go overboard", literal:"for the hand to get away from one" }
+];
+
+/* ============================ MEXICO ============================ */
+const mexicoSlang = [
+  { term:"güey", en:"dude, man", note:"used constantly between friends, like 'dude'" },
+  { term:"chido", en:"cool, awesome", note:"one of the most common ways to say something is great" },
+  { term:"qué padre", en:"how cool!, great!", note:"'¡qué padre!' expresses enthusiasm about something" },
+  { term:"neta", en:"the truth, for real", note:"'¿neta?' = really?/seriously?" },
+  { term:"no manches", en:"no way, come on", note:"an exclamation of disbelief, a milder alternative to a stronger phrase" },
+  { term:"chafa", en:"cheap, low-quality", note:"describes something poorly made or fake" },
+  { term:"chamba", en:"job, work", note:"'tengo mucha chamba' = I have a lot of work" },
+  { term:"lana", en:"money", note:"literally 'wool', used casually for cash" },
+  { term:"chela", en:"beer", note:"the go-to casual word for a beer" },
+  { term:"cuate", en:"buddy, friend", note:"a warm, friendly term for a close friend" },
+  { term:"fresa", en:"preppy, snobbish", note:"literally 'strawberry', describes someone seen as uptight or high-maintenance" },
+  { term:"órale", en:"wow / alright / come on", note:"an all-purpose exclamation of surprise or agreement" },
+  { term:"crudo/a", en:"hungover", note:"'ando crudo' = I'm hungover" },
+  { term:"aguas", en:"watch out, be careful", note:"'¡aguas!' warns someone of danger nearby" }
+];
+const mexicoSayings = [
+  { phrase:"echar la hueva", en:"to be lazy, to laze around", literal:"to throw out the laziness" },
+  { phrase:"ponerse las pilas", en:"to get one's act together", literal:"to put in the batteries" },
+  { phrase:"hacer de tripas corazón", en:"to make the best of a bad situation, muster courage", literal:"to make a heart out of guts" },
+  { phrase:"estar hasta el gorro", en:"to be completely fed up", literal:"to be up to the cap" },
+  { phrase:"echarle ganas", en:"to put in real effort, try hard", literal:"to throw desire/energy at it" },
+  { phrase:"ni pex", en:"no worries, it's all good", literal:"(shortened casual filler, roughly 'no biggie')" },
+  { phrase:"irse por la libre", en:"to do one's own thing, go it alone", literal:"to go by the free lane" },
+  { phrase:"comer ansias", en:"to be overly impatient", literal:"to eat anxieties" }
+];
+
+/* ============================ SPAIN ============================ */
+const spainSlang = [
+  { term:"tío/a", en:"dude / girl, mate", note:"the go-to way Spaniards address a friend" },
+  { term:"guay", en:"cool", note:"a classic, all-purpose way to say something is cool" },
+  { term:"vale", en:"okay", note:"used constantly to mean 'okay, alright'" },
+  { term:"flipar", en:"to freak out, to be amazed", note:"'estoy flipando' = I'm blown away" },
+  { term:"molar (me mola)", en:"to be cool, to like something", note:"'me mola mucho' = I really like it" },
+  { term:"curro / currar", en:"job / to work", note:"'voy al curro' = I'm going to work" },
+  { term:"pasta", en:"money", note:"a very common casual word for money" },
+  { term:"majo/a", en:"nice, friendly, likeable", note:"a warm compliment about someone's personality" },
+  { term:"colega", en:"buddy, mate", note:"a friendly term for a friend or acquaintance" },
+  { term:"chaval/a", en:"kid, young person", note:"used for a younger person, often affectionately" },
+  { term:"en plan", en:"like, in the style of", note:"'en plan tranquilo' = in a chill/relaxed way" },
+  { term:"qué fuerte", en:"that's intense!, that's crazy!", note:"reaction to something surprising or shocking" },
+  { term:"quedar", en:"to meet up with someone", note:"'quedamos a las ocho' = let's meet at eight" },
+  { term:"resaca", en:"hangover", note:"'tengo resaca' = I have a hangover" }
+];
+const spainSayings = [
+  { phrase:"írsele la olla", en:"to lose one's mind, to go a bit crazy", literal:"for the pot to go away from one" },
+  { phrase:"estar como una cabra", en:"to be crazy, wild", literal:"to be like a goat" },
+  { phrase:"dar la lata", en:"to be a nuisance, to nag", literal:"to give the tin can" },
+  { phrase:"montárselo bien", en:"to have it all figured out, to live well", literal:"to set it up well for oneself" },
+  { phrase:"ponerse como un tomate", en:"to blush deeply", literal:"to turn into a tomato" },
+  { phrase:"costar un riñón", en:"to cost a fortune", literal:"to cost a kidney" },
+  { phrase:"tirar la casa por la ventana", en:"to go all out, spare no expense", literal:"to throw the house out the window" },
+  { phrase:"no tener ni pajolera idea", en:"to have absolutely no idea", literal:"to not have even the faintest idea" }
+];
+
+/* ============================ COLOMBIA ============================ */
+const colombiaSlang = [
+  { term:"parce / parcero/a", en:"buddy, friend", note:"one of the most iconic Colombian words for a close friend" },
+  { term:"chévere", en:"cool, great", note:"widely used across Colombia for anything good" },
+  { term:"bacano/a", en:"cool, awesome", note:"another common way to say something is great" },
+  { term:"camello", en:"job, hard work", note:"literally 'camel', used for a tough job or task" },
+  { term:"rumbear / la rumba", en:"to party / a party", note:"'vamos a rumbear' = let's go party" },
+  { term:"guaro", en:"aguardiente (local anise liquor)", note:"the classic Colombian party drink" },
+  { term:"pola", en:"beer", note:"a casual, friendly word for a beer" },
+  { term:"llave", en:"close friend", note:"literally 'key' — someone you're tight with" },
+  { term:"berraco/a", en:"tough, impressive, or hard-working (context dependent)", note:"a versatile intensifier that can praise grit or difficulty" },
+  { term:"man", en:"guy, dude", note:"borrowed straight from English" },
+  { term:"qué más", en:"what's up", note:"a very common Colombian greeting" },
+  { term:"sisas", en:"yeah, yes", note:"a casual way to say yes" },
+  { term:"nel", en:"no", note:"shared with Mexico, a casual way to say no" },
+  { term:"tinto", en:"a small cup of black coffee", note:"NOT red wine like in Spain — in Colombia this means black coffee" }
+];
+const colombiaSayings = [
+  { phrase:"dar papaya", en:"to make yourself an easy target, to invite trouble by being careless", literal:"to give papaya" },
+  { phrase:"estar mamado/a", en:"to be exhausted or fed up", literal:"to be suckled/drained" },
+  { phrase:"comer cuento", en:"to be gullible, to fall for a story", literal:"to eat a story" },
+  { phrase:"hacer una vaca", en:"to pool money together for something", literal:"to make a cow" },
+  { phrase:"quedar en el aire", en:"to be left hanging, uncertain", literal:"to remain in the air" },
+  { phrase:"irse de rumba", en:"to go out partying", literal:"to go off to party" },
+  { phrase:"camellar duro", en:"to work hard", literal:"to camel hard" },
+  { phrase:"estar en la olla", en:"to be broke, in financial trouble", literal:"to be in the cooking pot" }
+];
+
+/* ============================ SLANG GENERATOR ============================ */
+function genSlangDrill(bank, countryName, flag) {
+  const item = randChoice(bank);
+  const toSpanish = Math.random() < 0.5;
+  const prompt = toSpanish ? item.en : item.term;
+  const answer = toSpanish ? item.term : item.en;
+  return {
+    category: `${flag} ${countryName} &middot; Slang`,
+    prompt: toSpanish
+      ? `Translate this casual/slang expression to Spanish:<br><span class="es">"${prompt}"</span>`
+      : `What does this ${countryName} slang word or phrase mean?<br><span class="es">"${prompt}"</span>`,
+    hints: [
+      item.note,
+      toSpanish
+        ? `It starts with the letter "${item.term[0]}" and has ${item.term.length} letters.`
+        : `It starts with "${item.en[0]}".`,
+      `The answer is "${answer}".`
+    ],
+    answer
+  };
+}
+
+/* ============================ SAYING / DICHO GENERATOR ============================ */
+function genSayingDrill(bank, countryName, flag, countryIn) {
+  const item = randChoice(bank);
+  return {
+    category: `${flag} ${countryName} &middot; Dicho / Saying`,
+    prompt: `What does this saying mean?<br><span class="es">"${item.phrase}"</span>`,
+    hints: [
+      `This expression is commonly heard in ${countryIn || countryName}.`,
+      `Literally, it translates to: "${item.literal}".`,
+      `It actually means: "${item.en}".`
+    ],
+    answer: item.en
+  };
+}
+
+/* ============================ topics / registry ============================ */
+const TOPICS = {
+  cuba_slang:      { label: `${FLAG.cuba} Cuba — Slang`,                gens: [() => genSlangDrill(cubaSlang, "Cuba", FLAG.cuba)] },
+  cuba_sayings:    { label: `${FLAG.cuba} Cuba — Sayings`,              gens: [() => genSayingDrill(cubaSayings, "Cuba", FLAG.cuba)] },
+  dr_slang:        { label: `${FLAG.dr} Dominican Republic — Slang`,    gens: [() => genSlangDrill(drSlang, "Dominican Republic", FLAG.dr)] },
+  dr_sayings:      { label: `${FLAG.dr} Dominican Republic — Sayings`,  gens: [() => genSayingDrill(drSayings, "Dominican Republic", FLAG.dr, "the Dominican Republic")] },
+  mexico_slang:    { label: `${FLAG.mexico} Mexico — Slang`,            gens: [() => genSlangDrill(mexicoSlang, "Mexico", FLAG.mexico)] },
+  mexico_sayings:  { label: `${FLAG.mexico} Mexico — Sayings`,          gens: [() => genSayingDrill(mexicoSayings, "Mexico", FLAG.mexico)] },
+  spain_slang:     { label: `${FLAG.spain} Spain — Slang`,              gens: [() => genSlangDrill(spainSlang, "Spain", FLAG.spain)] },
+  spain_sayings:   { label: `${FLAG.spain} Spain — Sayings`,            gens: [() => genSayingDrill(spainSayings, "Spain", FLAG.spain)] },
+  colombia_slang:  { label: `${FLAG.colombia} Colombia — Slang`,        gens: [() => genSlangDrill(colombiaSlang, "Colombia", FLAG.colombia)] },
+  colombia_sayings:{ label: `${FLAG.colombia} Colombia — Sayings`,      gens: [() => genSayingDrill(colombiaSayings, "Colombia", FLAG.colombia)] }
+};
+
+/* ============================ app state ============================ */
+let current = null;
+let hintsShown = 0;
+let answerShown = false;
+let timerStart = null;
+let timerInterval = null;
+let stats = { seen: 0, correct: 0, streak: 0, best: 0, totalTime: 0, timedCount: 0 };
+
+const filterGrid = document.getElementById('filterGrid');
+Object.entries(TOPICS).forEach(([key, t]) => {
+  const label = document.createElement('label');
+  label.innerHTML = `<input type="checkbox" checked data-topic="${key}"> ${t.label}`;
+  filterGrid.appendChild(label);
+});
+
+function activeGenerators() {
+  const checked = [...filterGrid.querySelectorAll('input[type=checkbox]:checked')].map(cb => cb.dataset.topic);
+  let pool = [];
+  checked.forEach(key => { pool = pool.concat(TOPICS[key].gens); });
+  if (pool.length === 0) {
+    Object.values(TOPICS).forEach(t => pool = pool.concat(t.gens));
+  }
+  return pool;
+}
+
+function fmtTime(sec) {
+  const m = Math.floor(sec / 60), s = Math.floor(sec % 60);
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+function updateStatsUI() {
+  document.getElementById('statSeen').textContent = stats.seen;
+  document.getElementById('statCorrect').textContent = stats.correct;
+  document.getElementById('statStreak').textContent = stats.streak;
+  document.getElementById('statBest').textContent = stats.best;
+  document.getElementById('statAvg').textContent = stats.timedCount ? fmtTime(stats.totalTime / stats.timedCount) : '–';
+}
+
+function startTimer() {
+  timerStart = Date.now();
+  const el = document.getElementById('timerDisplay');
+  el.classList.add('running');
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    el.textContent = fmtTime((Date.now() - timerStart) / 1000);
+  }, 250);
+}
+function stopTimer() {
+  clearInterval(timerInterval);
+  document.getElementById('timerDisplay').classList.remove('running');
+  return timerStart ? (Date.now() - timerStart) / 1000 : 0;
+}
+
+function newProblem() {
+  const pool = activeGenerators();
+  const gen = randChoice(pool);
+  current = gen();
+  hintsShown = 0;
+  answerShown = false;
+
+  document.getElementById('catBadge').textContent = current.category.replace(/&middot;/g, '·');
+  document.getElementById('problemText').innerHTML = current.prompt;
+  document.getElementById('hintArea').innerHTML = '';
+  document.getElementById('assessArea').style.display = 'none';
+
+  const hintBtn = document.getElementById('hintBtn');
+  hintBtn.disabled = false;
+  hintBtn.textContent = 'Show Hint (1/3)';
+  document.getElementById('answerBtn').disabled = false;
+  document.getElementById('answerBtn').textContent = 'Show Answer';
+
+  startTimer();
+}
+
+function showNextHint() {
+  if (!current || hintsShown >= current.hints.length) return;
+  const box = document.createElement('div');
+  box.className = 'hint-box';
+  box.innerHTML = `<span class="hnum">Hint ${hintsShown + 1}:</span>${current.hints[hintsShown]}`;
+  document.getElementById('hintArea').appendChild(box);
+  hintsShown++;
+  const hintBtn = document.getElementById('hintBtn');
+  if (hintsShown >= current.hints.length) {
+    hintBtn.disabled = true;
+    hintBtn.textContent = 'No more hints';
+  } else {
+    hintBtn.textContent = `Show Hint (${hintsShown + 1}/${current.hints.length})`;
+  }
+}
+
+function revealAnswer() {
+  if (!current || answerShown) return;
+  answerShown = true;
+  const box = document.createElement('div');
+  box.className = 'answer-box';
+  box.innerHTML = `<span class="albl">Answer:</span>${current.answer}`;
+  document.getElementById('hintArea').appendChild(box);
+  document.getElementById('answerBtn').disabled = true;
+  document.getElementById('answerBtn').textContent = 'Answer shown';
+  document.getElementById('assessArea').style.display = 'flex';
+  stopTimer();
+}
+
+function markResult(correct) {
+  const elapsed = timerStart ? (Date.now() - timerStart) / 1000 : 0;
+  stats.seen++;
+  stats.totalTime += elapsed;
+  stats.timedCount++;
+  if (correct) {
+    stats.correct++;
+    stats.streak++;
+    if (stats.streak > stats.best) stats.best = stats.streak;
+  } else {
+    stats.streak = 0;
+  }
+  updateStatsUI();
+  newProblem();
+}
+
+document.getElementById('hintBtn').addEventListener('click', showNextHint);
+document.getElementById('answerBtn').addEventListener('click', revealAnswer);
+document.getElementById('skipBtn').addEventListener('click', () => { stopTimer(); newProblem(); });
+document.getElementById('rightBtn').addEventListener('click', () => markResult(true));
+document.getElementById('wrongBtn').addEventListener('click', () => markResult(false));
+filterGrid.addEventListener('change', () => { /* filters apply to the next problem automatically */ });
+
+updateStatsUI();
+newProblem();
+</script>
+</body>
+</html>
